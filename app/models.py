@@ -5,15 +5,27 @@ class SolicitudDonante(db.Model):
     __tablename__ = 'solicitud_donacion'
 
     id_solicitud = db.Column(db.Integer, primary_key=True)
-    id_doctor = db.Column(db.Integer, nullable=False)
+    id_donante = db.Column(db.Integer, db.ForeignKey('donante.id_donante'), nullable=False)
     tipo_sangre = db.Column(db.String(5), nullable=False)
     cantidad = db.Column(db.Integer, nullable=False)
     fecha_solicitud = db.Column(db.DateTime, default=datetime.utcnow)
     estado = db.Column(db.String(20), default='pendiente')
     comentarios = db.Column(db.Text)
 
-from datetime import datetime
-from app import db
+    # Relación inversa hacia el donante
+    donante = db.relationship('Donante', back_populates='solicitudes')
+
+    #Convierte el modelo a un diccionario para JSON
+    def to_dict(self):
+        return {
+            "id_solicitud": self.id_solicitud,
+            "id_donante": self.id_donante,
+            "tipo_sangre": self.tipo_sangre,
+            "cantidad": self.cantidad,
+            "fecha_solicitud": self.fecha_solicitud.isoformat(),
+            "estado": self.estado,
+            "comentarios": self.comentarios
+        }
 
 # -------------------------------
 # MODELO USUARIO
@@ -55,6 +67,8 @@ class Donante(db.Model):
     # Relaciones
     usuario = db.relationship('Usuario', back_populates='donante')
     agendamientos = db.relationship('Agendamiento', back_populates='donante', lazy=True)
+    solicitudes = db.relationship('SolicitudDonante', back_populates='donante', lazy=True)
+
 
     def __repr__(self):
         return f"<Donante {self.id_donante} - Tipo: {self.tipo_sangre}>"
