@@ -1,19 +1,19 @@
-from flask import Blueprint, render_template, jsonify, request
+from flask import Blueprint, jsonify, request
 from app import controllers as donaciones_controller
 
 bp = Blueprint('donaciones', __name__, url_prefix='/api/donaciones')
 web_bp = Blueprint('donaciones_web', __name__, url_prefix='/donaciones')
 
-# RUTA obtener solicitudes de donantes
+# Funcionalidades donante: obtener solicitudes de donantes aprobadas
 @bp.route('/', methods=['GET'])
-def listar_solicitudes():
+def listar_solicitudes_aprobadas():
     try:
-        data = donaciones_controller.obtener_solicitudes()
+        data = donaciones_controller.obtener_solicitudes_aprobadas()
         return jsonify(data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-#agendar citas para donar
+# agendar citas para donar
 @bp.route('/agendar/<int:id_donante>', methods = ['POST'])#limitar cantidad de agendamientos por donante
 def agendar_donacion(id_donante):
     try:
@@ -29,7 +29,7 @@ def agendar_donacion(id_donante):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-#solicitar donantes de sangre
+# solicitar donantes de sangre
 @bp.route('/solicitar-donantes/<int:id_donante>', methods=['POST'])
 def crear_solicitud_donantes(id_donante):
     try:
@@ -48,4 +48,16 @@ def crear_solicitud_donantes(id_donante):
         return jsonify(respuesta), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+#funcionalidad doctor
+#visualizar solicitudes de agendamiento nombre del paciente, fecha, estado y observacion
+@bp.route('/agendamientos', methods = ['GET'])
+def listar_agendamientos():
+    try:
+        data = donaciones_controller.obtener_agendamientos()
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+#cambiar estado de agendamientp de donacion confirmado/cancelar
 
