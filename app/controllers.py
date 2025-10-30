@@ -2,8 +2,8 @@ from app.models import SolicitudDonante, Agendamiento
 from datetime import datetime
 from app import db
 
-
-def obtener_solicitudes():
+#donantes
+def obtener_solicitudes_aprobadas():
     solicitudes = SolicitudDonante.query.filter_by(estado='aprobado').all()
     return [s.to_dict() for s in solicitudes]
 
@@ -58,3 +58,36 @@ def crear_solicitud(id_donante, tipo_sangre, cantidad, fecha_solicitud, comentar
     except Exception as e:
         db.session.rollback()
         raise e
+
+#doctores
+def obtener_agendamientos():
+    agendamientos = Agendamiento.query.all()
+    return [
+        {
+        "id_agendamiento" : a.id_agendamiento,
+        "nombre_paciente": f"{a.donante.usuario.nombre} {a.donante.usuario.apellido}",
+        "fecha_turno": a.fecha_turno.strftime("%Y-%m-%d %H:%M"),
+        "estado" : a.estado,
+        "observaciones" : a.observaciones
+        } 
+        for a in agendamientos
+    ]
+
+def actualizar_estado_agendamiento(id_agendamiento, nuevo_estado, observacion, id_doctor):
+    agendamiento = Agendamiento.query.get(id_agendamiento)
+
+    if not agendamiento:
+        return {"error": "Agendamiento no encontrado"}
+
+    agendamiento.estado = nuevo_estado
+    agendamiento.observaciones = observacion
+    agendamiento.id_doctor = id_doctor  
+    db.session.commit()
+
+    return {
+        "mensaje": f"Agendamiento {nuevo_estado} exitosamente",
+        "id_agendamiento": agendamiento.id_agendamiento,
+        "estado": agendamiento.estado,
+        "observacion": agendamiento.observaciones,
+        "doctor": id_doctor
+    }
