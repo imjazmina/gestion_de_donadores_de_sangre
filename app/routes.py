@@ -60,4 +60,21 @@ def listar_agendamientos():
         return jsonify({"error": str(e)}), 500
 
 #cambiar estado de agendamientp de donacion confirmado/cancelar
+@bp.route('agendamientos/<int:id_agendamiento>', methods = ['PUT'])
+def cambiar_estado_agendamiento(id_agendamiento):
+    try:
+        data = request.get_json()
+        nuevo_estado = data.get('estado')
+        observacion = data.get('observacion', None)
+        id_doctor = data.get('id_doctor') 
+
+        if nuevo_estado not in ['confirmado', 'cancelado']:
+            return jsonify({"error": "El estado debe ser 'confirmado' o 'cancelado'"}), 400
+
+        resultado = donaciones_controller.actualizar_estado_agendamiento(
+            id_agendamiento, nuevo_estado, observacion, id_doctor
+        )
+        return jsonify(resultado), 200
+    except Exception as e:
+        return jsonify({"error": str(e)})
 

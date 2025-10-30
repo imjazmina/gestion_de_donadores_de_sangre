@@ -72,3 +72,22 @@ def obtener_agendamientos():
         } 
         for a in agendamientos
     ]
+
+def actualizar_estado_agendamiento(id_agendamiento, nuevo_estado, observacion, id_doctor):
+    agendamiento = Agendamiento.query.get(id_agendamiento)
+
+    if not agendamiento:
+        return {"error": "Agendamiento no encontrado"}
+
+    agendamiento.estado = nuevo_estado
+    agendamiento.observaciones = observacion
+    agendamiento.id_doctor = id_doctor  
+    db.session.commit()
+
+    return {
+        "mensaje": f"Agendamiento {nuevo_estado} exitosamente",
+        "id_agendamiento": agendamiento.id_agendamiento,
+        "estado": agendamiento.estado,
+        "observacion": agendamiento.observaciones,
+        "doctor": id_doctor
+    }
