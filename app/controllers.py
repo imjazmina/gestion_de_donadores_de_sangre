@@ -1,6 +1,7 @@
-from app.models import SolicitudDonante, Agendamiento
+from app.models import SolicitudDonante, Agendamiento, Usuario
 from datetime import datetime
 from app import db
+from werkzeug.security import generate_password_hash
 
 #donantes
 def obtener_solicitudes_aprobadas():
@@ -32,7 +33,7 @@ def crear_turno(id_donante, fecha, hora):
         db.session.rollback()
         raise e
 
-def crear_solicitud(id_donante, tipo_sangre, cantidad, fecha_solicitud, comentarios):
+def crear_solicitud(id_donante, tipo_sangre, cantidad, fecha_solicitud, comentarios, motivo):
     try:
         # Convertir fecha si viene como string
         if isinstance(fecha_solicitud, str):
@@ -44,7 +45,8 @@ def crear_solicitud(id_donante, tipo_sangre, cantidad, fecha_solicitud, comentar
             cantidad=cantidad,
             fecha_solicitud=fecha_solicitud,
             estado='pendiente',
-            comentarios=comentarios
+            comentarios=comentarios,
+            motivo = motivo
         )
 
         db.session.add(nueva_solicitud)
@@ -91,3 +93,51 @@ def actualizar_estado_agendamiento(id_agendamiento, nuevo_estado, observacion, i
         "observacion": agendamiento.observaciones,
         "doctor": id_doctor
     }
+
+# admin
+#abm usuarios
+def crear_usuario(data):
+    nuevo_usuario = Usuario(
+        nombre=data.get('nombre'),
+        apellido=data.get('apellido'),
+        email=data.get('email'),
+        contrasena=generate_password_hash(data.get('contrasena')),
+        rol=data.get('rol')
+    )
+    db.session.add(nuevo_usuario)
+    db.session.commit()
+    return nuevo_usuario.to_dict()
+
+def obtener_usuarios():
+    usuarios = Usuario.query.all()
+    return [u.to_dict() for u in usuarios]
+
+def obtener_usuario(id_usuario):
+    usuario = Usuario.query.get(id_usuario)
+    return usuario.to_dict() if usuario else None
+
+def actualizar_usuario(id_usuario, data):
+    usuario = Usuario.query.get(id_usuario)
+    if not usuario:
+        return None
+
+    usuario.nombre = data.get('nombre', usuario.nombre)
+    usuario.apellido = data.get('apellido', usuario.apellido)
+    usuario.email = data.get('email', usuario.email)
+    usuario.rol = data.get('rol', usuario.rol)
+
+    if 'contrasena' in data:
+        usuario.contrasena = generate_password_hash(data['contrasena'])
+
+    db.session.commit()
+    return usuario.to_dict()
+
+def eliminar_usuario(id_usuario):
+    usuario = Usuario.query.get(id_usuario)
+    if not usuario:
+        return None
+    
+    usuario.activo = False
+    db.session.commit()
+    return True
+

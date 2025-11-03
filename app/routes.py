@@ -1,8 +1,10 @@
 from flask import Blueprint, jsonify, request
 from app import controllers as donaciones_controller
 
+
 bp = Blueprint('donaciones', __name__, url_prefix='/api/donaciones')
 web_bp = Blueprint('donaciones_web', __name__, url_prefix='/donaciones')
+bp_usuarios = Blueprint('usuarios', __name__, url_prefix='/api/usuarios')
 
 # Funcionalidades donante: obtener solicitudes de donantes aprobadas
 @bp.route('/', methods=['GET'])
@@ -38,6 +40,7 @@ def crear_solicitud_donantes(id_donante):
         cantidad = data.get('cantidad')
         fecha_solicitud = data.get('fecha_solicitud')
         comentarios = data.get('comentarios')
+        motivo = data.get('motivo')
 
         if not tipo_sangre or not cantidad or not fecha_solicitud:
             return jsonify({"error": "Campos incompletos"}), 400
@@ -60,7 +63,7 @@ def listar_agendamientos():
         return jsonify({"error": str(e)}), 500
 
 #cambiar estado de agendamientp de donacion confirmado/cancelar
-@bp.route('agendamientos/<int:id_agendamiento>', methods = ['PUT'])
+@bp.route('/agendamientos/<int:id_agendamiento>', methods = ['PUT'])
 def cambiar_estado_agendamiento(id_agendamiento):
     try:
         data = request.get_json()
@@ -77,4 +80,41 @@ def cambiar_estado_agendamiento(id_agendamiento):
         return jsonify(resultado), 200
     except Exception as e:
         return jsonify({"error": str(e)})
+    
+#funcionalidd admin
+# abm usuario
+@bp_usuarios.route('/', methods=['POST'])
+def crear_usuario():
+    data = request.get_json()
+    nuevo = donaciones_controller.crear_usuario(data)
+    return jsonify(nuevo), 201
+
+@bp_usuarios.route('/', methods=['GET'])
+def obtener_usuarios():
+    usuarios = donaciones_controller.obtener_usuarios()
+    return jsonify(usuarios), 200
+
+@bp_usuarios.route('/<int:id_usuario>', methods=['GET'])
+def obtener_usuario(id_usuario):
+    usuario = donaciones_controller.obtener_usuario(id_usuario)
+    if not usuario:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    return jsonify(usuario), 200
+
+@bp_usuarios.route('/<int:id_usuario>', methods=['PUT'])
+def actualizar_usuario(id_usuario):
+    data = request.get_json()
+    actualizado = donaciones_controller.actualizar_usuario(id_usuario, data)
+    if not actualizado:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    return jsonify(actualizado), 200
+
+@bp_usuarios.route('/<int:id_usuario>', methods=['DELETE'])
+def eliminar_usuario(id_usuario):
+    eliminado = donaciones_controller.eliminar_usuario(id_usuario)
+    if not eliminado:
+        return jsonify({"error": "Usuario no encontrado"}), 404
+    return jsonify({"mensaje": "Usuario desactivado correctamente"}), 200
+
+
 

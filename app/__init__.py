@@ -23,6 +23,7 @@ def create_app():
     # Registrar blueprints
     from app import routes as donaciones
     app.register_blueprint(donaciones.bp)
+    app.register_blueprint(donaciones.bp_usuarios)
     app.register_blueprint(donaciones.web_bp)
 
     # Probar conexión
