@@ -130,7 +130,7 @@
       display: block;
       width: 100%;
       padding: 12px;
-      background: #017bfe;
+      background: rgb(18, 12, 97);;
       color: white;
       font-size: 16px;
       border: none;
@@ -143,74 +143,19 @@
     .boton:hover {
       background: #0056c1;
     }
-
-    footer {
-      background: #017bfe;
-      color: white;
-      text-align: center;
-      padding: 20px;
-      font-size: 14px;
-      margin-top: 50px;
-    }
     .active{
         text-decoration: none;
     }
   </style>
 </head>
-
 <body>
-   <header class="navbar">
-    <div class="logo">
-      <a href="{{ url_for('donaciones_web.index') }}" class="active">
-      <img src="../static/img/logo.png" alt="VitaLink">
-      <span>VitaLink</span>
-      </a>
-    </div>
-    <nav>
-      <a href="{{ url_for('donaciones_web.agendar_donacion') }}">Quiero donar</a>
-      <a href="{{ url_for('donaciones_web.mostrar_info') }}"}>Dudas</a>
-      <a href="../templates/registro.html">Registro</a>
-      <a href="../templates/login.html" class="btn-outline">Iniciar sesión</a>
-      <a href="../templates/login.html">Admin</a>
-    </nav>
-  </header>
+    {% include 'partials/navbar.html' %}
 
-  <section class="banner">
-    <h1>Conecta con donantes y salva vidas</h1>
-    <p>En VitaLink facilitamos el encuentro entre quienes necesitan ayuda y quienes desean darla.</p>
-  </section>
-
-  <!-- Introducción -->
+  <!-- agregar datos del solicitante -->
   <div class="necesitan-donacion">
-    <h2>Solicitar Donante</h2>
-    <p>Completa los siguientes datos para ver turnos disponibles y encontrar donantes compatibles con tu tipo de sangre.</p>
+    <h2>Completa los siguientes datos para ver turnos disponibles.</h2>
     <p>Tu solicitud puede marcar la diferencia entre la vida y la esperanza 💙</p>
   </div>
-
-  <!-- Imagen ilustrativa -->
-  <div class="imagen-donacion">
-  <img src="{{ url_for('static', filename='img/donacion1.jpg') }}" alt="Donación de sangre">
-  </div>
-
-  <!-- Beneficios -->
-  <section class="beneficios">
-    <div class="beneficio">
-      <img src="../static/img/icono1.png" alt="Solidaridad">
-      <h3>Solidaridad</h3>
-      <p>Tu pedido conecta con personas dispuestas a ayudar sin esperar nada a cambio.</p>
-    </div>
-    <div class="beneficio">
-      <img src="../static/img/icono2.png" alt="Rapidez">
-      <h3>Rapidez</h3>
-      <p>Recibe respuesta en poco tiempo gracias a nuestra red activa de donantes.</p>
-    </div>
-    <div class="beneficio">
-      <img src="../static/img/icono3.png" alt="Confianza">
-      <h3>Confianza</h3>
-      <p>Todas las solicitudes son verificadas y gestionadas con responsabilidad.</p>
-    </div>
-  </section>
-
   <!-- Formulario -->
   <form id="agendarForm" class="formulario">
     {% if id_receptor %}
@@ -230,15 +175,7 @@
     <button type="submit" class="boton">Agendar</button>
   </form>
 
- <footer>
-    <span>VitaLink</span>
-    <p>© 2025 VitaLink — Sistema de Gestión de Donantes de Sangre</p>
-    <div class="footer-links">
-      <a href="#">Política de privacidad</a> |
-      <a href="#">Términos de uso</a> |
-      <a href="#">Contacto</a>
-    </div>
-  </footer>
+  {% include 'partials/footer.html' %}
   <script>
     document.getElementById("agendarForm").addEventListener("submit", async (e) => {
       e.preventDefault();

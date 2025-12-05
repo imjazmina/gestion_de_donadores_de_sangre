@@ -1,0 +1,12 @@
+<header class="navbar">
+    <div class="logo">
+      <a href="{{ url_for('donaciones_web.index') }}" class="active">
+      <span>Banco de sangre</span><!--alinear en el medio-->
+      </a>
+    </div>
+    <nav>
+      <a href="#agendar-donacion-hero">Quiero Donar</a>
+      <a href="{{ url_for('donaciones_web.login') }}">Necesito donantes</a>
+      <a href="{{ url_for('donaciones_web.login') }}" class="btn-outline">Iniciar sesión</a>
+    </nav>
+  </header>
