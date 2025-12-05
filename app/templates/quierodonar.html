@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitar Donante - VitaLink</title>
+  <link rel="stylesheet" href="../static/css/style.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background-color: #f9fbfd;
+      color: #333;
+    }
+
+    .banner {
+      background: linear-gradient(135deg, #dbe9ff, #bcd6ff);
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .banner h1 {
+      color: #1c2630;
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .banner p {
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    .necesitan-donacion {
+      text-align: center;
+      margin: 30px auto;
+      max-width: 700px;
+      width: 90%;
+    }
+
+    .necesitan-donacion h2 {
+      color: #454444;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .necesitan-donacion p {
+      color: #000;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    .imagen-donacion {
+      display: flex;
+      justify-content: center;
+      margin: 30px 0;
+    }
+
+    .imagen-donacion img {
+      max-width: 500px;
+      width: 90%;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    /* --- Beneficios --- */
+    .beneficios {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin: 40px 20px;
+    }
+
+    .beneficio {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      width: 260px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .beneficio img {
+      width: 50px;
+      margin-bottom: 10px;
+    }
+
+    .beneficio h3 {
+      color: #4d97e6;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    .beneficio p {
+      font-size: 0.95rem;
+      color: #444;
+    }
+
+    /* --- Formulario --- */
+    .formulario {
+      max-width: 500px;
+      margin: 40px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .formulario .campo {
+      margin-bottom: 15px;
+    }
+
+    .formulario label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .formulario select,
+    .formulario input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .boton {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #017bfe;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    .boton:hover {
+      background: #0056c1;
+    }
+
+    footer {
+      background: #017bfe;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      margin-top: 50px;
+    }
+    .active{
+        text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+   <header class="navbar">
+    <div class="logo">
+      <a href="{{ url_for('donaciones_web.index') }}" class="active">
+      <img src="../static/img/logo.png" alt="VitaLink">
+      <span>VitaLink</span>
+      </a>
+    </div>
+    <nav>
+      <a href="{{ url_for('donaciones_web.agendar_donacion') }}">Quiero donar</a>
+      <a href="{{ url_for('donaciones_web.mostrar_info') }}"}>Dudas</a>
+      <a href="../templates/registro.html">Registro</a>
+      <a href="../templates/login.html" class="btn-outline">Iniciar sesión</a>
+      <a href="../templates/login.html">Admin</a>
+    </nav>
+  </header>
+
+  <section class="banner">
+    <h1>Conecta con donantes y salva vidas</h1>
+    <p>En VitaLink facilitamos el encuentro entre quienes necesitan ayuda y quienes desean darla.</p>
+  </section>
+
+  <!-- Introducción -->
+  <div class="necesitan-donacion">
+    <h2>Solicitar Donante</h2>
+    <p>Completa los siguientes datos para ver turnos disponibles y encontrar donantes compatibles con tu tipo de sangre.</p>
+    <p>Tu solicitud puede marcar la diferencia entre la vida y la esperanza 💙</p>
+  </div>
+
+  <!-- Imagen ilustrativa -->
+  <div class="imagen-donacion">
+  <img src="{{ url_for('static', filename='img/donacion1.jpg') }}" alt="Donación de sangre">
+  </div>
+
+  <!-- Beneficios -->
+  <section class="beneficios">
+    <div class="beneficio">
+      <img src="../static/img/icono1.png" alt="Solidaridad">
+      <h3>Solidaridad</h3>
+      <p>Tu pedido conecta con personas dispuestas a ayudar sin esperar nada a cambio.</p>
+    </div>
+    <div class="beneficio">
+      <img src="../static/img/icono2.png" alt="Rapidez">
+      <h3>Rapidez</h3>
+      <p>Recibe respuesta en poco tiempo gracias a nuestra red activa de donantes.</p>
+    </div>
+    <div class="beneficio">
+      <img src="../static/img/icono3.png" alt="Confianza">
+      <h3>Confianza</h3>
+      <p>Todas las solicitudes son verificadas y gestionadas con responsabilidad.</p>
+    </div>
+  </section>
+
+  <!-- Formulario -->
+  <form id="agendarForm" class="formulario">
+    {% if id_receptor %}
+      <input type="hidden" id="id_receptor" value="{{ id_receptor }}">
+    {% endif %}
+
+    <div class="campo">
+      <label for="fecha">Fecha</label>
+      <input type="date" id="fecha" required>
+    </div>
+
+    <div class="campo">
+      <label for="hora">Hora</label>
+      <input type="time" id="hora" required>
+    </div>
+
+    <button type="submit" class="boton">Agendar</button>
+  </form>
+
+ <footer>
+    <span>VitaLink</span>
+    <p>© 2025 VitaLink — Sistema de Gestión de Donantes de Sangre</p>
+    <div class="footer-links">
+      <a href="#">Política de privacidad</a> |
+      <a href="#">Términos de uso</a> |
+      <a href="#">Contacto</a>
+    </div>
+  </footer>
+  <script>
+    document.getElementById("agendarForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const fecha = document.getElementById("fecha").value;
+      const hora = document.getElementById("hora").value;
+
+      const id_donante = 1; // Temporalmente fijo 
+      const respuesta = await fetch(`/agendar/{{ id_receptor }}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fecha, hora }),
+      });
+
+      const data = await respuesta.json();
+      const mensaje = document.getElementById("mensaje");
+
+      if (respuesta.ok) {
+        mensaje.textContent = data.mensaje;
+        mensaje.style.color = "green";
+      } else {
+        mensaje.textContent = data.error || "Error al agendar el turno";
+        mensaje.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>

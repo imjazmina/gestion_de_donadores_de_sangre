@@ -1,0 +1,209 @@
+:root {
+  --primary: #4b89e7;
+  --primary-light: #3b82f6;
+  --success: #22c55e;
+  --warning: #facc15;
+  --danger: #ef4444;
+  --info: #2f8ad0;
+  --gray: #6b7280;
+  --bg: #f3f4f6;
+  --white: #ffffff;
+  --shadow: 0 2px 10px rgba(0,0,0,0.05);
+  --radius: 12px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: var(--bg);
+  color: #111827;
+  display: flex;
+  height: 100vh;
+}
+
+/* ======= SIDEBAR ======= */
+.sidebar {
+  width: 230px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.sidebar .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+.sidebar nav {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.7rem 1rem;
+  color: #374151;
+  text-decoration: none;
+  border-radius: var(--radius);
+  transition: all 0.2s;
+}
+
+.sidebar a.active,
+.sidebar a:hover {
+  background: var(--primary);
+  color: white;
+}
+
+.sidebar .bottom {
+  font-size: 0.9rem;
+  color: var(--gray);
+  cursor: pointer;
+}
+
+/* ======= HEADER ======= */
+.header {
+  height: 64px;
+  background: var(--white);
+  box-shadow: var(--shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+}
+
+.header .user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+}
+
+.header .user img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+}
+
+/* ======= CONTENIDO ======= */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+/* ======= TARJETAS SOLICITUDES ======= */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.status {
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status.pendiente { background: #fef9c3; color: #854d0e; }
+.status.aprobada { background: #dcfce7; color: #166534; }
+.status.urgente { background: #fee2e2; color: #991b1b; }
+.status.completada { background: #dbeafe; color: #1e3a8a; }
+
+.btns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.btn.aprobar { background: var(--success); color: white; }
+.btn.rechazar { background: var(--danger); color: white; }
+
+.btn.aprobar:hover { background: #16a34a; }
+.btn.rechazar:hover { background: #dc2626; }
+
+/* ======= TABLA CITAS ======= */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--white);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.table th, .table td {
+  padding: 12px 16px;
+  text-align: left;
+}
+
+.table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #374151;
+}
+
+.table tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.badge {
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.badge.pendiente { background: #fef9c3; color: #854d0e; }
+.badge.confirmada { background: #dcfce7; color: #166534; }
+.badge.completada { background: #dbeafe; color: #1e3a8a; }
+.badge.cancelada { background: #fee2e2; color: #991b1b; }
+
+.actions i {
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.actions i.edit { color: var(--primary); }
+.actions i.delete { color: var(--danger); }
