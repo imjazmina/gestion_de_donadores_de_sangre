@@ -21,9 +21,9 @@ def create_app():
     db.init_app(app)
 
     # Registrar blueprints
-    from app import routes as donaciones
-    app.register_blueprint(donaciones.bp)
-    app.register_blueprint(donaciones.web_bp)
+    from app import routes as donaciones_web
+
+    app.register_blueprint(donaciones_web.web_bp)
 
     # Probar conexión
     with app.app_context():
