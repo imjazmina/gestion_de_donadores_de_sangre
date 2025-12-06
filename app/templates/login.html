@@ -18,24 +18,51 @@
         <p class="welcome-subtext">Inicia sesión y empieza a donar sangre y salvar vidas</p>
     </div>
     </div>
+    <div class="right-panel">
+        <form class="loginForm" id="loginForm">
+            <label for="email">Correo electrónico</label>
+            <input type="email" name="email" id="email" placeholder="nombre@gmail.com" required>
 
-        <div class="right-panel">
-            <form class="login-form">
-                <label for="email">Correo electrónico</label>
-                <input type="email" id="email" placeholder="nombre@gmail.com" required>
+            <label for="password">Contraseña</label>
+            <input type="password" name="password" id="password" placeholder="**********" required>
 
-                <label for="password">Contraseña</label>
-                <input type="password" id="password" placeholder="**********" required>
-
-                <button type="submit" class="btn-login">Iniciar Sesión</button>
-                <button type="button" class="btn-register" onclick="location.href='registro.html'">
-                Crear una cuenta nueva
-                </button>
-
-
-            
-            </form>
-        </div>
+            <button type="submit" class="btn-login">Iniciar Sesión</button>
+            <button type="button" class="btn-register" onclick="location.href='registro.html'">
+            Crear una cuenta nueva
+            </button>
+        </form>
     </div>
+</div>
+    
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const contrasena = document.getElementById("password").value;
+
+    try {
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, contrasena })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error || "Error al iniciar sesión");
+            return;
+        }
+
+        alert(data.mensaje||"Inicio de sesión exitoso");
+        window.location.href = data.redirect;   
+    } 
+    catch (error) {
+        alert("Error en el servidor");
+    }
+});
+</script>
+
 </body>
 </html>

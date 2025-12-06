@@ -65,14 +65,14 @@ body, html {
   padding: 60px 40px;
 }
 
-.login-form {
+.loginForm {
   width: 100%;
   max-width: 400px;
   background: #fff;
   gap: 20px;
 }
 
-.login-form h1 {
+.loginForm h1 {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 25px;
@@ -80,17 +80,15 @@ body, html {
   text-align: center;
 }
 
-.login-form label {
+.loginForm label {
   display: block;
   margin-bottom: 6px;
   font-weight: bold;
   color: #333;
 }
 
-.login-form input[type="text"],
-.login-form input[type="email"],
-.login-form input[type="tel"],
-.login-form input[type="password"] {
+.loginForm input[type="email"],
+.loginForm input[type="password"] {
   width: 100%;
   padding: 12px 15px;
   margin-bottom: 15px;

@@ -1,7 +1,12 @@
+from app.models import Usuario
 from flask import Blueprint, jsonify, request, render_template
 from app import controllers as donaciones_controller
 
 web_bp = Blueprint('donaciones_web', __name__)
+
+@web_bp.route('/')
+def index():
+    return render_template('index.html')
 
 # Funcionalidades donante: obtener solicitudes de donantes aprobadas
 @web_bp.route('/')
@@ -63,23 +68,14 @@ def crear_solicitud_donantes(id_donante):
         return jsonify(respuesta), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-@web_bp.route('/info')
-def mostrar_info():
-    return render_template('info.html')
 
-@web_bp.route('/')
-def index():
-    return render_template('index.html')
-
-    
 #funcionalidad doctor
 #visualizar solicitudes de agendamiento nombre del paciente, fecha, estado y observacion
-@web_bp.route('/agendamientos', methods = ['GET'])
+@web_bp.route('/doctor', methods=['GET'])
 def listar_agendamientos():
     try:
         data = donaciones_controller.obtener_agendamientos()
-        return jsonify(data), 200
+        return render_template('admin.html', data=data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -111,9 +107,9 @@ def crear_usuario():
     return jsonify(nuevo), 201
 
 @web_bp.route('/admin', methods=['GET'])
-def obtener_usuarios():
+def admin():
     usuarios = donaciones_controller.obtener_usuarios()
-    return jsonify(usuarios), 200
+    return render_template('admin.html', usuarios=usuarios)
 
 @web_bp.route('/admin/<int:id_usuario>', methods=['GET'])
 def obtener_usuario(id_usuario):
@@ -137,21 +133,34 @@ def eliminar_usuario(id_usuario):
         return jsonify({"error": "Usuario no encontrado"}), 404
     return jsonify({"mensaje": "Usuario desactivado correctamente"}), 200
 
-@web_bp.route('/login')
+@web_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
-    '''elif request.method == 'POST':
-        try:
-            correo = request.get_json()
-            contrasena = data.get('fecha')
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        contrasena = data.get('contrasena')
 
-            data = donaciones_controller.login(
-                id_usuario=id_usuario,
-                rol= rol
-                )
+        if not email or not contrasena:
+            return jsonify({"error": "Email y contraseña requeridos"}), 400
+        
+        usuario = donaciones_controller.login_usuario(email, contrasena)
 
-            return jsonify(data), 200
+        if not usuario:
+            return jsonify({"error": "Credenciales inválidas"}), 401
+        # Aquí armamos la redirección según rol
+        if usuario.rol == 'admin':
+            redirect_url = "/admin"
+        elif usuario.rol == 'doctor':
+            redirect_url = "/doctor"
+        else:
+            redirect_url = "/index"
 
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500'''
+        return jsonify({
+            "mensaje": f"Bienvenido {usuario.rol.capitalize()}",
+            "redirect": redirect_url
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
