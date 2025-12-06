@@ -19,15 +19,14 @@ def obtener_solicitudes_aprobadas():
             "tipo_sangre": s.tipo_sangre,
             "comentarios": s.comentarios,
             "motivo": s.motivo,
-            "id_donante": s.id_donante,
+            "id_donante": s.id_donante,#este id es del donante que solicita la sangre
             "nombre": s.donante.usuario.nombre,
             "apellido": s.donante.usuario.apellido
         })
 
     return resultado
 
-
-def crear_turno(id_donante, fecha, hora):
+def crear_turno(id_donante, fecha, hora, id_solicitante=None    ):
     try:
         # Combinar fecha y hora en un solo datetime
         fecha_hora = datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
@@ -35,6 +34,7 @@ def crear_turno(id_donante, fecha, hora):
         nuevo_turno = Agendamiento(
             id_donante=id_donante,
             fecha_turno=fecha_hora,
+            id_receptor=id_solicitante, 
             estado='pendiente'
         )
 
@@ -44,7 +44,9 @@ def crear_turno(id_donante, fecha, hora):
         return {
             "mensaje": "Turno agendado correctamente",
             "id_agendamiento": nuevo_turno.id_agendamiento,
+            "id_donante": nuevo_turno.id_donante,
             "fecha_turno": nuevo_turno.fecha_turno.strftime("%Y-%m-%d %H:%M"),
+            "id_receptor": nuevo_turno.id_receptor,
             "estado": nuevo_turno.estado
         }
 

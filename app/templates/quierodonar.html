@@ -158,11 +158,8 @@
   </div>
   <!-- Formulario -->
   <form id="agendarForm" class="formulario">
-    {% if id_receptor %}
-      <input type="hidden" id="id_receptor" value="{{ id_receptor }}">
-    {% endif %}
-
     <div class="campo">
+      <input type="hidden" id="id_solicitante">
       <label for="fecha">Fecha</label>
       <input type="date" id="fecha" required>
     </div>
@@ -177,30 +174,54 @@
 
   {% include 'partials/footer.html' %}
   <script>
-    document.getElementById("agendarForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+document.addEventListener("DOMContentLoaded", () => {
+  const id = localStorage.getItem("id_solicitante");
 
-      const fecha = document.getElementById("fecha").value;
-      const hora = document.getElementById("hora").value;
+  const hidden = document.getElementById("id_solicitante");
+  if (hidden) hidden.value = id; 
+});
 
-      const id_donante = 1; // Temporalmente fijo 
-      const respuesta = await fetch(`/agendar/{{ id_receptor }}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fecha, hora }),
-      });
+document.addEventListener("DOMContentLoaded", () => {
+  const botones = document.querySelectorAll(".btn-donar");
 
-      const data = await respuesta.json();
-      const mensaje = document.getElementById("mensaje");
+  botones.forEach(boton => {
+    boton.addEventListener("click", (e) => {
+      const card = e.target.closest(".card");
+      const idSolicitante = card.querySelector(".id_solicitante").innerText.trim();
 
-      if (respuesta.ok) {
-        mensaje.textContent = data.mensaje;
-        mensaje.style.color = "green";
-      } else {
-        mensaje.textContent = data.error || "Error al agendar el turno";
-        mensaje.style.color = "red";
-      }
+      // Guardar temporalmente en el front
+      localStorage.setItem("id_solicitante", idSolicitante);
     });
-  </script>
+  });
+});
+document.getElementById("agendarForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const id_donante = 1; // Donante que agendará
+  const fecha = document.getElementById("fecha").value;
+  const hora = document.getElementById("hora").value;
+  const id_solicitante = document.getElementById("id_solicitante").value || null;
+
+  const res = await fetch("/agendar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      id_donante,
+      fecha,
+      hora,
+      id_solicitante
+    })
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    alert("Turno agendado exitosamente 💙");
+  } else {
+    alert("Error: " + data.error);
+  }
+});
+
+</script>
 </body>
 </html>

@@ -20,9 +20,10 @@ def agendar_donacion():
         return render_template('quierodonar.html')
    
     data = request.get_json()
+    id_donante = data.get('idDonante')#temporal hasta login
     fecha = data.get('fecha')
     hora = data.get('hora')
-
+    id_solicitante = data.get('id_solicitante')  # puede ser None
 
     if not fecha or not hora:
         return jsonify({"error": "Se requieren la fecha y la hora"}), 400
@@ -33,6 +34,7 @@ def agendar_donacion():
             id_donante=id_donante,
             fecha=fecha,
             hora=hora,
+            id_solicitante=id_solicitante,   # aquí lo usás
         )
 
         return jsonify(data), 200

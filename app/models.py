@@ -81,7 +81,19 @@ class Donante(db.Model):
 
     # Relaciones
     usuario = db.relationship('Usuario', back_populates='donante')
-    agendamientos = db.relationship('Agendamiento', back_populates='donante', lazy=True)
+    # Turnos creados por este donante como voluntario
+    agendamientos = db.relationship(
+        "Agendamiento",
+        foreign_keys="Agendamiento.id_donante",
+        back_populates="donante"
+    )
+
+    # Turnos donde este donante es receptor de ayuda
+    turnos_recibidos = db.relationship(
+        "Agendamiento",
+        foreign_keys="Agendamiento.id_receptor",
+        back_populates="receptor"
+    )
     solicitudes = db.relationship('SolicitudDonante', back_populates='donante', lazy=True)
 
 
@@ -134,15 +146,24 @@ class Agendamiento(db.Model):
 
     id_agendamiento = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_donante = db.Column(db.Integer, db.ForeignKey('donante.id_donante'), nullable=False)
+    id_receptor = db.Column(db.Integer, db.ForeignKey('donante.id_donante'), nullable=True)
     id_doctor = db.Column(db.Integer, db.ForeignKey('doctor.id_doctor'), nullable=True)
+
     fecha_turno = db.Column(db.DateTime, nullable=False)
     estado = db.Column(db.String(20), nullable=False, default='pendiente')
     observaciones = db.Column(db.Text, nullable=True)
 
-    # Relaciones
-    donante = db.relationship('Donante', back_populates='agendamientos')
+    #  Donante que agenda
+    donante = db.relationship(
+        'Donante',
+        foreign_keys=[id_donante],
+        back_populates='agendamientos'
+    )
+
+    #  Donante que recibe la ayuda
+    receptor = db.relationship(
+        'Donante',
+        foreign_keys=[id_receptor],
+        back_populates='turnos_recibidos'
+    )
     doctor = db.relationship('Doctor', back_populates='agendamientos')
-
-    def __repr__(self):
-        return f"<Agendamiento {self.id_agendamiento} - Estado: {self.estado}>"
-

@@ -76,6 +76,9 @@
   <div class="container">
     {% for solicitud in solicitudes %}
       <div class="card">
+      <div class="id_solicitante" hidden>
+        {{ solicitud.id_donante }}
+      </div>
         <img src="{{ url_for('static', filename='img/icono.jpg') }}" 
           alt="Foto del solicitante"
           class="foto-solicitante">
@@ -176,51 +179,20 @@ document.getElementById("agendarForm").addEventListener("submit", async function
         console.error(error);
     }
 });
-/*
-document.getElementById("agendarForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
 
-    const idDonante = 1; // fijo por ahora
+document.addEventListener("DOMContentLoaded", () => {
+  const botones = document.querySelectorAll(".btn-donar");
 
-    const data = {
-        tipo_sangre: document.getElementById("tipo_sangre").value,
-        cantidad: document.getElementById("cantidad").value,
-        fecha_solicitud: document.getElementById("fecha_solicitud").value,
-        comentarios: document.getElementById("comentarios").value,
-        motivo: document.getElementById("motivo").value
-    };
+  botones.forEach(boton => {
+    boton.addEventListener("click", (e) => {
+      const card = e.target.closest(".card");
+      const idSolicitante = card.querySelector(".id_solicitante").innerText.trim();
 
-    const response = await fetch(`/solicitar-donantes/${idDonante}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-
-    if (response.ok) {
-        alert("Solicitud creada con éxito");
-        console.log(result);
-    } else {
-        alert("Error: " + result.error);
-    }
-});
-
-  const accordionBtns = document.querySelectorAll('.accordion-btn');
-  accordionBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      btn.classList.toggle('active');
-      const content = btn.nextElementSibling;
-      if(content.style.display === "block"){
-        content.style.display = "none";
-      } else {
-        content.style.display = "block";
-      }
+      localStorage.setItem("id_solicitante", idSolicitante);
+      console.log("ID del solicitante guardado:", idSolicitante);
     });
   });
-*/
+}); 
 </script>
 </body>
 </html>
