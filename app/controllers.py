@@ -1,12 +1,31 @@
-from app.models import SolicitudDonante, Agendamiento, Usuario
+from app.models import SolicitudDonante, Agendamiento, Usuario, Donante
 from datetime import datetime
 from app import db
 from werkzeug.security import generate_password_hash
 
-#donantes
 def obtener_solicitudes_aprobadas():
-    solicitudes = SolicitudDonante.query.filter_by(estado='aprobado').all()
-    return [s.to_dict() for s in solicitudes]
+    solicitudes = (
+        db.session.query(SolicitudDonante)
+        .join(Donante, SolicitudDonante.id_donante == Donante.id_donante)
+        .join(Usuario, Donante.id_usuario == Usuario.id_usuario)
+        .filter(SolicitudDonante.estado == 'aprobado')
+        .all()
+    )
+
+    resultado = []
+    for s in solicitudes:
+        resultado.append({
+            "id_solicitud": s.id_solicitud,
+            "tipo_sangre": s.tipo_sangre,
+            "comentarios": s.comentarios,
+            "motivo": s.motivo,
+            "id_donante": s.id_donante,
+            "nombre": s.donante.usuario.nombre,
+            "apellido": s.donante.usuario.apellido
+        })
+
+    return resultado
+
 
 def crear_turno(id_donante, fecha, hora):
     try:

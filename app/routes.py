@@ -18,39 +18,39 @@ def agendar_donacion():
 
     if request.method == 'GET':
         return render_template('quierodonar.html')
-    elif request.method == 'POST':
-        try:
-            data = request.get_json()
-            fecha = data.get('fecha')
-            hora = data.get('hora')
+   
+    data = request.get_json()
+    fecha = data.get('fecha')
+    hora = data.get('hora')
 
-            if not fecha or not hora:
-                return jsonify({"error": "Se requieren la fecha y la hora"}), 400
 
-            id_donante = 1  # Temporal hasta login
+    if not fecha or not hora:
+        return jsonify({"error": "Se requieren la fecha y la hora"}), 400
 
-            data = donaciones_controller.crear_turno(
-                id_donante=id_donante,
-                fecha=fecha,
-                hora=hora,
-                #id_receptor=id_receptor
-            )
+    id_donante = 1  # Temporal hasta login
+    try:
+        data = donaciones_controller.crear_turno(
+            id_donante=id_donante,
+            fecha=fecha,
+            hora=hora,
+        )
 
-            return jsonify(data), 200
+        return jsonify(data), 200
 
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # solicitar donantes de sangre
-@web_bp.route('/solicitar-donantes/<int:id_donante>', methods=['POST'])
+@web_bp.route('/solicitar-donantes/<int:id_donante>', methods=['GET', 'POST'])
 def crear_solicitud_donantes(id_donante):
+    if request.method == 'GET':
+        return render_template('solicitar.html')
     try:
-        data = request.get_json()
-        tipo_sangre = data.get('tipo_sangre')
-        cantidad = data.get('cantidad')
-        fecha_solicitud = data.get('fecha_solicitud')
-        comentarios = data.get('comentarios')
-        motivo = data.get('motivo')
+        tipo_sangre = request.form.get('tipo_sangre')
+        cantidad = request.form.get('cantidad')
+        fecha_solicitud = request.form.get('fecha_solicitud')
+        comentarios = request.form.get('comentarios')
+        motivo = request.form.get('motivo')
 
         if not tipo_sangre or not cantidad or not fecha_solicitud:
             return jsonify({"error": "Campos incompletos"}), 400

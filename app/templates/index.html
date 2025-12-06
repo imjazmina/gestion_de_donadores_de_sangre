@@ -79,10 +79,13 @@
         <img src="{{ url_for('static', filename='img/icono.jpg') }}" 
           alt="Foto del solicitante"
           class="foto-solicitante">
-        <div class="nombre">a {{ solicitud.nombre }} {{ solicitud.apellido }}</div>
+        <div class="nombre"> {{ solicitud.nombre }} {{ solicitud.apellido }}</div>
         <div class="tipo-sangre">
           <span>Tipo de sangre</span>
           <h3>{{ solicitud.tipo_sangre }}</h3>
+        </div>
+        <div class="info-extra">
+          "{{ solicitud.comentarios }}"
         </div>
         <a href="{{ url_for('donaciones_web.agendar_donacion') }}" 
           class="btn-donar">
