@@ -136,6 +136,13 @@
 
 {% include 'partials/footer.html' %}
 
+{% if session.get('logout_ok') %}
+<script>
+    alert("Sesión cerrada correctamente.");
+</script>
+{% set _ = session.pop('logout_ok') %}
+{% endif %}
+
 <script>
 
 document.querySelector('a[href="#agendar-donacion-hero"]').addEventListener('click', function(e) {
@@ -160,11 +167,15 @@ document.getElementById("agendarForm").addEventListener("submit", async function
     try {
         const response = await fetch("{{ url_for('donaciones_web.agendar_donacion') }}", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ fecha, hora })
         });
+
+        // Si el backend redirige → fetch NO cambia de página
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
 
         const data = await response.json();
 
@@ -173,13 +184,11 @@ document.getElementById("agendarForm").addEventListener("submit", async function
         } else {
             alert("Error: " + data.error);
         }
-
     } catch (error) {
         alert("Hubo un error inesperado. Intenta nuevamente.");
         console.error(error);
     }
 });
-
 document.addEventListener("DOMContentLoaded", () => {
   const botones = document.querySelectorAll(".btn-donar");
 

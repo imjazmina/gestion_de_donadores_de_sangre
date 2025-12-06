@@ -62,6 +62,13 @@ document.getElementById("loginForm").addEventListener("submit", async function(e
         alert("Error en el servidor");
     }
 });
+
+const params = new URLSearchParams(window.location.search);
+if (params.get("expired") === "1") {
+    alert("Tu sesión ha expirado. Por favor vuelve a iniciar sesión.");
+}
+
+
 </script>
 
 </body>

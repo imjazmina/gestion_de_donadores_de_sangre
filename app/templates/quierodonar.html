@@ -197,7 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById("agendarForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const id_donante = 1; // Donante que agendará
   const fecha = document.getElementById("fecha").value;
   const hora = document.getElementById("hora").value;
   const id_solicitante = document.getElementById("id_solicitante").value || null;
@@ -206,7 +205,6 @@ document.getElementById("agendarForm").addEventListener("submit", async (e) => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      id_donante,
       fecha,
       hora,
       id_solicitante

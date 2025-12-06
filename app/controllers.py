@@ -1,7 +1,6 @@
 from app.models import SolicitudDonante, Agendamiento, Usuario, Donante
 from datetime import datetime
 from app import db
-from flask import session
 from werkzeug.security import generate_password_hash
 
 def obtener_solicitudes_aprobadas():
@@ -170,9 +169,5 @@ def login_usuario(email, contrasena):
     # implementar check_password_hash
     if not usuario or usuario.contrasena != contrasena:
         return None
-    # Guardamos sesión
-    session['usuario_id'] = usuario.id_usuario
-    session['rol'] = usuario.rol
-    session['nombre'] = usuario.nombre
 
     return usuario

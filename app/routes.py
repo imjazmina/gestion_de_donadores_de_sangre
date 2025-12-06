@@ -1,16 +1,12 @@
-from app.models import Usuario
-from flask import Blueprint, jsonify, request, render_template
+from flask import Blueprint, jsonify, request, render_template, session, redirect, url_for
 from app import controllers as donaciones_controller
+from app.auth import login_required, rol_required
 
 web_bp = Blueprint('donaciones_web', __name__)
 
-@web_bp.route('/')
-def index():
-    return render_template('index.html')
-
 # Funcionalidades donante: obtener solicitudes de donantes aprobadas
 @web_bp.route('/')
-def listar_solicitudes_aprobadas():
+def index():
     try:
         solicitudes = donaciones_controller.obtener_solicitudes_aprobadas()
         return render_template('index.html', solicitudes=solicitudes)   
@@ -19,13 +15,13 @@ def listar_solicitudes_aprobadas():
     
 # agendar citas para donar
 @web_bp.route('/agendar', methods=['GET', 'POST'])
+@login_required
 def agendar_donacion():
 
     if request.method == 'GET':
         return render_template('quierodonar.html')
-   
     data = request.get_json()
-    id_donante = data.get('idDonante')#temporal hasta login
+    id_donante = session.get("usuario_id")
     fecha = data.get('fecha')
     hora = data.get('hora')
     id_solicitante = data.get('id_solicitante')  # puede ser None
@@ -33,7 +29,6 @@ def agendar_donacion():
     if not fecha or not hora:
         return jsonify({"error": "Se requieren la fecha y la hora"}), 400
 
-    id_donante = 1  # Temporal hasta login
     try:
         data = donaciones_controller.crear_turno(
             id_donante=id_donante,
@@ -48,11 +43,13 @@ def agendar_donacion():
         return jsonify({"error": str(e)}), 500
 
 # solicitar donantes de sangre
-@web_bp.route('/solicitar-donantes/<int:id_donante>', methods=['GET', 'POST'])
-def crear_solicitud_donantes(id_donante):
+@web_bp.route('/solicitar-donantes', methods=['GET', 'POST'])
+@login_required
+def crear_solicitud_donantes():
     if request.method == 'GET':
         return render_template('solicitar.html')
     try:
+        id_donante = session.get("usuario_id")
         tipo_sangre = request.form.get('tipo_sangre')
         cantidad = request.form.get('cantidad')
         fecha_solicitud = request.form.get('fecha_solicitud')
@@ -72,6 +69,7 @@ def crear_solicitud_donantes(id_donante):
 #funcionalidad doctor
 #visualizar solicitudes de agendamiento nombre del paciente, fecha, estado y observacion
 @web_bp.route('/doctor', methods=['GET'])
+@rol_required('doctor')
 def listar_agendamientos():
     try:
         data = donaciones_controller.obtener_agendamientos()
@@ -81,6 +79,7 @@ def listar_agendamientos():
 
 #cambiar estado de agendamientp de donacion confirmado/cancelar
 @web_bp.route('/agendamientos/<int:id_agendamiento>', methods = ['PUT'])
+@rol_required('doctor')
 def cambiar_estado_agendamiento(id_agendamiento):
     try:
         data = request.get_json()
@@ -101,17 +100,20 @@ def cambiar_estado_agendamiento(id_agendamiento):
 #funcionalidd admin
 # abm usuario
 @web_bp.route('/admin', methods=['POST'])
+@rol_required('admin')
 def crear_usuario():
     data = request.get_json()
     nuevo = donaciones_controller.crear_usuario(data)
     return jsonify(nuevo), 201
 
 @web_bp.route('/admin', methods=['GET'])
+@rol_required('admin')
 def admin():
     usuarios = donaciones_controller.obtener_usuarios()
     return render_template('admin.html', usuarios=usuarios)
 
 @web_bp.route('/admin/<int:id_usuario>', methods=['GET'])
+@rol_required('admin')
 def obtener_usuario(id_usuario):
     usuario = donaciones_controller.obtener_usuario(id_usuario)
     if not usuario:
@@ -119,6 +121,7 @@ def obtener_usuario(id_usuario):
     return jsonify(usuario), 200
 
 @web_bp.route('/admin/<int:id_usuario>', methods=['PUT'])
+@rol_required('admin')
 def actualizar_usuario(id_usuario):
     data = request.get_json()
     actualizado = donaciones_controller.actualizar_usuario(id_usuario, data)
@@ -127,6 +130,7 @@ def actualizar_usuario(id_usuario):
     return jsonify(actualizado), 200
 
 @web_bp.route('/admin/<int:id_usuario>', methods=['DELETE'])
+@rol_required('admin')
 def eliminar_usuario(id_usuario):
     eliminado = donaciones_controller.eliminar_usuario(id_usuario)
     if not eliminado:
@@ -149,13 +153,20 @@ def login():
 
         if not usuario:
             return jsonify({"error": "Credenciales inválidas"}), 401
-        # Aquí armamos la redirección según rol
+        
+        # Guardamos sesión
+        session['usuario_id'] = usuario.id_usuario
+        session['rol'] = usuario.rol
+        session['nombre'] = usuario.nombre
+        session.permanent = False
+
+
         if usuario.rol == 'admin':
             redirect_url = "/admin"
         elif usuario.rol == 'doctor':
             redirect_url = "/doctor"
         else:
-            redirect_url = "/index"
+            redirect_url = "/"
 
         return jsonify({
             "mensaje": f"Bienvenido {usuario.rol.capitalize()}",
@@ -164,3 +175,10 @@ def login():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@web_bp.route('/logout', methods=['GET'])
+def logout():
+    session.clear()  # opcional
+    session['logout_ok'] = True  # flag temporal
+    return redirect(url_for('donaciones_web.index'))
+
