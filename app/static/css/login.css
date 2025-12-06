@@ -11,47 +11,7 @@ body, html {
   display: flex;
   flex-direction: column;
 }
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 15px 50px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo img {
-  height: 32px;
-}
-
-nav a {
-  margin: 0 15px;
-  text-decoration: none;
-  color: #444;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-nav a:hover {
-  color: #017bfe;
-}
-
-nav a.active {
-  color: #017bfe;
-  font-weight: 600;
-}
-
-.container {
+.container-login {
   flex: 1;
   display: flex;
   min-height: calc(100vh - 120px); 
@@ -59,7 +19,7 @@ nav a.active {
 
 .left-panel {
   flex: 1;
-  background: linear-gradient(135deg, #8db4df, #6b96c5);
+  background: rgb(18, 12, 97);
   color: #fff;
   padding: 60px 40px;
   display: flex;
@@ -109,6 +69,7 @@ nav a.active {
   width: 100%;
   max-width: 400px;
   background: #fff;
+  gap: 20px;
 }
 
 .login-form h1 {
@@ -140,6 +101,7 @@ nav a.active {
 .btn-login, .btn-register {
   width: 100%;
   padding: 12px;
+  margin: 10px 0;
   border: none;
   border-radius: 6px;
   font-size: 1rem;
@@ -148,7 +110,7 @@ nav a.active {
 }
 
 .btn-login {
-  background-color: #2D8CF0;
+  background-color: rgb(18, 12, 97);
   color: #fff;
 }
 
