@@ -58,28 +58,30 @@
 
     </div>
 
-        <h3 class="titulo-form">Verificación de Aptitud</h3>
+<form id="form-evaluacion" action="{{ url_for('donaciones_web.guardar_evaluacion', id_agendamiento=agendamiento.id_agendamiento) }}" method="POST" class="form-evaluacion">
+
+    <h3 class="titulo-form">Verificación de Aptitud</h3>
 
     <div class="aptitud-grid">
 
         <div class="campo">
-            <label><span class="icon">⚖️</span> Peso (kg)</label>
-            <input type="number" step="0.1" placeholder="Ej: 65.5">
+            <label><span class="icon"></span> Peso (kg)</label>
+            <input type="number" name="peso" step="0.1" placeholder="Ej: 65.5">
         </div>
 
         <div class="campo">
-            <label><span class="icon">🤍</span> Presión arterial (mmHg)</label>
-            <input type="text" placeholder="Ej: 120/80">
+            <label><span class="icon"></span> Presión arterial (mmHg)</label>
+            <input type="text" name="presion" placeholder="Ej: 120/80">
         </div>
 
         <div class="campo">
-            <label><span class="icon">🌡️</span> Temperatura (°C)</label>
-            <input type="number" placeholder="Ej: 36.5">
+            <label><span class="icon"></span> Temperatura (°C)</label>
+            <input type="number" name="temperatura" step="0.1" placeholder="Ej: 36.5">
         </div>
 
         <div class="campo">
-            <label><span class="icon">🩸</span> Hemoglobina (g/dL)</label>
-            <input type="number" step="0.1" placeholder="Ej: 14.5">
+            <label><span class="icon"></span> Hemoglobina (g/dL)</label>
+            <input type="number" name="hemoglobina" step="0.1" placeholder="Ej: 14.5">
         </div>
 
         <div class="campo" id="comentarios-box">
@@ -100,46 +102,38 @@
     <button type="submit" class="btn-guardar">Guardar evaluación</button>
     </form> 
     <!--falta un pequeno logout-->
-    {% endblock %}
+    
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Selecciona el formulario por su ID
-            const form = document.getElementById('form-evaluacion');
-            
-            // 2. Escucha el evento de envío del formulario
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault(); // <-- ¡IMPORTANTE! Detiene el envío HTTP tradicional (recarga de página)
+document.getElementById("form-evaluacion").addEventListener("submit", async function(e) {
+    e.preventDefault(); 
 
-                // Crea un objeto con los datos del formulario
-                const formData = new FormData(form);
-                const url = form.action; 
+    const form = e.target;
+    const url = form.action;
 
-                try {
-                    // 3. Envía los datos de forma asíncrona (AJAX)
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        body: formData,
-                    });
+    const formData = new FormData(form);
 
-                    // 4. Parsea la respuesta JSON
-                    const data = await response.json(); 
-
-                    if (response.ok && data.success) {
-                        // ÉXITO (status 200 y success: true)
-                        alert(`✅ Éxito: ${data.message}`);
-                        
-                        // Opcional: Recargar la página o redirigir después del éxito
-                        // window.location.reload(); 
-                        // window.location.href = "{{ url_for('web_bp.admin') }}"; 
-                    } else {
-                        // ERROR (status 400, 500 o success: false)
-                        // Usa el mensaje de error que enviamos desde Flask
-                        alert(`❌ Error al guardar: ${data.message}`);
-                    }
-                } catch (error) {
-                    // Error de red, conexión o JSON inválido
-                    alert(`❌ Error de conexión o comunicación con el servidor: ${error.message}`);
-                }
-            });
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            body: formData
         });
-    </script>
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Formulario enviado con éxito");
+            
+            // Recargar o redirigir si querés
+            location.reload();
+
+        } else {
+            alert("Error: " + (data.error || "Ocurrió un error inesperado"));
+        }
+
+    } catch (err) {
+        alert("Error de conexión: No se pudo enviar la evaluación.");
+    }
+});
+</script>
+
+    {% endblock %}

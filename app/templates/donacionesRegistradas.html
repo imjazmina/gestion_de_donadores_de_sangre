@@ -1,6 +1,6 @@
 {% extends "partials/doctor_nav.html" %}
 
-{% block titulo %}Registros% endblock %}
+{% block titulo %}Registros{% endblock %}
 {% block titulo_header %}Registros de Donaciones{% endblock %}
 
 {% set active_page = "completados" %}
@@ -13,6 +13,8 @@
             <th>Donante</th>
             <th>Receptor</th>
             <th>Fecha</th>
+            <th>Tipo de Sangre</th>
+            <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -20,12 +22,13 @@
         <tbody>
           {% for item in data %}
           <tr>
-            <td>{{ item.nombre_paciente }}</td>
-            <td>{{ item.nombre_receptor }}</td>
-            <td>{{ item.fecha_turno }}</td>
-            <td>
-              <a class="btn-ver" href="#"" target="_blank">Evaluación PDF</a>
-              <a class="btn-pdf" href="#"" target="_blank">Formulario PDF</a>
+            <td>{{ item.nombre_completo_donante }}</td>
+            <td>{{ item.nombre_completo_receptor }}</td>
+            <td>{{ item.fecha_agendamiento }}</td>
+            <td style="text-align: center;">{{ item.tipo_sangre }}</td>
+            <td>{{ item.estado_agendamiento }}</td>
+            <td  style="text-align: center;">
+              <a class="btn-ver" href="#"" target="_blank">Ver</a>
             </td>
           </tr>
           {% endfor %}

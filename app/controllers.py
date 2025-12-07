@@ -131,26 +131,34 @@ def obtener_agendamientos_dia():
 def obtener_registros_completados():
     agendamientos = (
         Agendamiento.query
-        .filter(Agendamiento.estado == "confirmado")
+        .filter(Agendamiento.estado == "completado")
         .order_by(Agendamiento.fecha_turno.desc())
         .all()
     )
-
+    
     resultado = []
-
     for ag in agendamientos:
+        donante_obj = ag.donante
+        usuario_donante = donante_obj.usuario
+
+        # 1. Determinar el nombre completo del Receptor
+        nombre_completo_receptor = "—" 
+        if ag.receptor and ag.receptor.usuario:
+            usuario_receptor = ag.receptor.usuario
+            nombre_completo_receptor = f"{usuario_receptor.nombre} {usuario_receptor.apellido}"
+
+        # 2. Construir el resultado con solo los campos esenciales
         resultado.append({
             "id_donante": ag.id_donante,
             "id_agendamiento": ag.id_agendamiento,
-            "nombre_paciente": f"{ag.donante.usuario.nombre} {ag.donante.usuario.apellido}",
-            "nombre_receptor": f"{ag.receptor.usuario.nombre} {ag.receptor.usuario.apellido}" if ag.receptor else "—",
-            "fecha_turno": ag.fecha_turno.strftime("%d/%m/%Y %H:%M"),
-            "pdf_evaluacion": f"storage/pdf/evaluaciones/{ag.id_agendamiento}.pdf",
-            "pdf_formulario": f"storage/pdf/formularios/{ag.id_agendamiento}.pdf"
+            "nombre_completo_donante": f"{usuario_donante.nombre} {usuario_donante.apellido}",
+            "tipo_sangre": donante_obj.tipo_sangre,
+            "fecha_agendamiento": ag.fecha_turno.strftime("%d/%m/%Y %H:%M"),
+            "nombre_completo_receptor": nombre_completo_receptor,
+            "estado_agendamiento": ag.estado
         })
 
     return resultado
-#mostrar id agendamiento, id donante, edad, nombre, apellido, tipo sangre, direccion, telefono
 
 def obtener_agendamiento(id_agendamiento):
 
@@ -186,35 +194,32 @@ def obtener_agendamiento(id_agendamiento):
     
     return datos_donante # Retornamos un diccionario listo para usar en la plantilla
 
+# En tu donaciones_controller.py
 def guardar_evaluacion(id_agendamiento, resultado, comentarios, peso, temperatura, hemoglobina, presion):
     agendamiento = Agendamiento.query.get(id_agendamiento)
     if not agendamiento:
-        raise Exception("El agendamiento no existe")
-    # Guardar signos vitales en el agendamiento
+        raise Exception("El agendamiento no existe")    
+    # ❗ CORRECCIÓN CLAVE: Asignar todos los signos vitales (pueden ser None si el resultado fue 'no_apto')
     agendamiento.peso = peso
     agendamiento.temperatura = temperatura
     agendamiento.hemoglobina = hemoglobina
     agendamiento.presion_arterial = presion
-
-    # Guardar comentarios
     agendamiento.observaciones = comentarios
-    # Actualizar estado según resultado
-    agendamiento.estado = "completado" if resultado == "apto" else "rechazado"
 
-    # Si fue apto actualizar donante
+    # ... (resto de la lógica de actualización del estado y donante se mantiene igual)
     if resultado == "apto":
+        agendamiento.estado = 'completado'
         donante = agendamiento.donante
-
-        # Actualizar última fecha de donación
         donante.ultima_donacion = date.today()
-
-        # No puede donar por 4 meses
         donante.disponible_para_donar = False
+    elif resultado == 'no_apto':
+        agendamiento.estado = 'rechazado'
 
-    db.session.commit()
-
-    return agendamiento
-
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        raise e
 
 def actualizar_estado_agendamiento(id_agendamiento, nuevo_estado, observacion, id_doctor):
     agendamiento = Agendamiento.query.get(id_agendamiento)

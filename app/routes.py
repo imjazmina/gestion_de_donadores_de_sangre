@@ -83,7 +83,8 @@ def listar_agendamientos():
 def listar_agendamientos_completados():
     try:
         data = donaciones_controller.obtener_registros_completados()
-        return render_template('admin.html', data=data ,active_page='completados') 
+        print(data)
+        return render_template('donacionesRegistradas.html', data=data ,active_page='completados') 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -99,22 +100,39 @@ def mostrar_evaluacion(id_agendamiento):
     except Exception as e:
         return render_template('evaluacion_donante.html', agendamiento=agendamiento )
 
+# Función auxiliar para manejar cadenas vacías y conversión segura
+def safe_float(value):
+    if value and value.strip():
+        try:
+            return float(value)
+        except ValueError:
+            # Capturará si el input es 'abc'
+            raise ValueError("Valor numérico inválido en peso, temperatura o hemoglobina.")
+    # Si está vacío, devolvemos None (NULL) o 0.0 si es mandatorio por la DB
+    return None 
+
 @web_bp.route('/evaluacion/<int:id_agendamiento>/guardar', methods=['POST'])
 def guardar_evaluacion(id_agendamiento):
     try:
-        # Obtener datos del formulario
-        resultado = request.form.get("resultado")  # apto / no_apto
-        comentarios = request.form.get("comentarios")
+        # Obtener el ID del doctor logueado desde la sesión o del objeto de usuario
+        # Asumiendo que guardas el ID del doctor en la sesión
+        resultado = request.form.get("resultado") 
+        comentarios = request.form.get("comentarios") or None # Convierte cadena vacía a None
 
-        peso = request.form.get("peso")
-        temperatura = request.form.get("temperatura")
-        hemoglobina = request.form.get("hemoglobina")
-        presion = request.form.get("presion")
-
-        # Validación mínima
-        if not resultado:
-            return jsonify({"error": "Debe seleccionar si es apto o no"}), 400
-
+        # Procesar datos solo si es 'apto' o si están llenos
+        if resultado == 'apto':
+            peso = safe_float(request.form.get("peso"))
+            temperatura = safe_float(request.form.get("temperatura"))
+            hemoglobina = safe_float(request.form.get("hemoglobina"))
+            presion = request.form.get("presion") or None
+            
+        # CORRECCIÓN: Usar 'no_apto' del HTML
+        elif resultado == 'no_apto': 
+            peso = None
+            temperatura = None
+            hemoglobina = None
+            presion = None
+        
         # Llamar al controlador de negocio
         donaciones_controller.guardar_evaluacion(
             id_agendamiento=id_agendamiento,
@@ -128,42 +146,9 @@ def guardar_evaluacion(id_agendamiento):
         return jsonify({
             "success": True, 
             "message": "Evaluación guardada con éxito."
-        }), 200 # OK
-    except Exception as e:
-        print(f"Error al guardar evaluación: {e}")
-        # Respuesta de error en JSON si ocurre una excepción
-        return jsonify({
-            "success": False, 
-            "message": f"Ocurrió un error: {str(e)}"
-        }), 500 # Internal Server Error
-
-
-'''#obtener perfil donante para evaluar su donacion
-@web_bp.route('/donante/<int:id_donante>')
-def perfil_donante(id_donante):
-    donante = donaciones_controller.obtener_donante(id_donante)
-    ultima_donacion = donaciones_controller.obtener_ultima_donacion(id_donante)
-    estado_disponible = donaciones_controller.esta_disponible(id_donante)
-
-    return render_template(
-        'donantes/perfil_donante.html',
-        donante=donante,
-        ultima_donacion=ultima_donacion,
-        estado_disponible=estado_disponible
-    )
-guardar form con pre evaluacion del donante
-@web_bp.route('/donante/<int:id_donante>/evaluar', methods=['POST'])
-def guardar_evaluacion(id_donante):
-    aptitud = request.form.get('aptitud')
-    notas = request.form.get('notas')
-
-    try:
-        donaciones_controller.guardar_evaluacion(id_donante, aptitud, notas)
-        return jsonify({"mensaje": "Evaluación guardada correctamente", "status": "success"})
+        }), 200 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-    return redirect(url_for('donantes_web.perfil_donante', id_donante=id_donante))'''
 #cambiar estado de agendamientp de donacion confirmado/cancelar
 @web_bp.route('/agendamientos/<int:id_agendamiento>', methods = ['PUT'])
 @rol_required('doctor')

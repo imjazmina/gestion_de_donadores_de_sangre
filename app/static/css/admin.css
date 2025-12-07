@@ -206,7 +206,7 @@ footer {
 .tabla-agendamientos td {
   padding: 12px 10px;
   border-bottom: 1px solid #ddd;
-  text-align: left;
+  text-align: center;
 }
 
 .tabla-agendamientos tr:hover {
@@ -343,7 +343,7 @@ footer {
     font-size: 15px;
 }
 
-.btn-guardar {
+.btn-guardar  {
     margin-top: 15px;
     width: 100%;
     background: #1e3a8a;
@@ -354,6 +354,23 @@ footer {
     font-weight: bold;
     cursor: pointer;
     transition: 0.2s;
+    text-decoration: none;
+
+}
+
+.btn-evaluacion, .btn-ver  {
+    margin-top: 15px;
+    width: 100%;
+    background: #1e3a8a;
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+
 }
 
 .btn-guardar:hover {
