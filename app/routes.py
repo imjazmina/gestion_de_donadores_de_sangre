@@ -74,7 +74,6 @@ def crear_solicitud_donantes():
 def listar_agendamientos():
     try:
         data = donaciones_controller.obtener_agendamientos_dia()
-        print(data)
         return render_template('admin.html', data=data,  active_page='citas')
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -84,14 +83,59 @@ def listar_agendamientos():
 def listar_agendamientos_completados():
     try:
         data = donaciones_controller.obtener_registros_completados()
-        return render_template('admin.html', data=data,active_page='completados') 
+        return render_template('admin.html', data=data ,active_page='completados') 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@web_bp.route('/evaluacion/<int:id_donante>')
-def mostrar_evaluacion(id_donante):
-    donante = donaciones_controller.obtener_donante(id_donante)
-    return render_template('evaluacion_donante.html', donante=donante)
+# Si la evaluación es por agendamiento
+@web_bp.route('/evaluacion/<int:id_agendamiento>')
+def mostrar_evaluacion(id_agendamiento):
+    try:
+    # Tendrías que obtener el agendamiento y luego el donante
+        agendamiento = donaciones_controller.obtener_agendamiento(id_agendamiento)
+        # Pasa el objeto completo del agendamiento a la plantilla
+        return render_template('evaluacion_donante.html', agendamiento=agendamiento)
+    
+    except Exception as e:
+        return render_template('evaluacion_donante.html', agendamiento=agendamiento )
+
+@web_bp.route('/evaluacion/<int:id_agendamiento>/guardar', methods=['POST'])
+def guardar_evaluacion(id_agendamiento):
+    try:
+        # Obtener datos del formulario
+        resultado = request.form.get("resultado")  # apto / no_apto
+        comentarios = request.form.get("comentarios")
+
+        peso = request.form.get("peso")
+        temperatura = request.form.get("temperatura")
+        hemoglobina = request.form.get("hemoglobina")
+        presion = request.form.get("presion")
+
+        # Validación mínima
+        if not resultado:
+            return jsonify({"error": "Debe seleccionar si es apto o no"}), 400
+
+        # Llamar al controlador de negocio
+        donaciones_controller.guardar_evaluacion(
+            id_agendamiento=id_agendamiento,
+            resultado=resultado,
+            comentarios=comentarios,
+            peso=peso,
+            temperatura=temperatura,
+            hemoglobina=hemoglobina,
+            presion=presion
+        )
+        return jsonify({
+            "success": True, 
+            "message": "Evaluación guardada con éxito."
+        }), 200 # OK
+    except Exception as e:
+        print(f"Error al guardar evaluación: {e}")
+        # Respuesta de error en JSON si ocurre una excepción
+        return jsonify({
+            "success": False, 
+            "message": f"Ocurrió un error: {str(e)}"
+        }), 500 # Internal Server Error
 
 
 '''#obtener perfil donante para evaluar su donacion

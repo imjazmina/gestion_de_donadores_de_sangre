@@ -19,11 +19,11 @@
         <tbody>
             {% for item in data %}
             <tr>
-                <td>{{ item.nombre_donante }} {{ item.apellido_donante }}</td>
-                <td>{{ item.nombre_receptor }} {{ item.apellido_receptor }}</td>
+                <td>{{ item.nombre_completo_donante }}</td>
+                <td>{{ item.nombre_completo_receptor }}</td>
                 <td>{{ item.fecha_agendamiento }}</td>
                 <td>
-                  <a href="{{ url_for('donaciones_web.mostrar_evaluacion', id_donante=item.id_donante) }}" class="btn-ver">
+                  <a href="{{ url_for('donaciones_web.mostrar_evaluacion', id_agendamiento=item.id_agendamiento) }}" class="btn-ver">
                     Evaluación
                   </a>                
                 </td>

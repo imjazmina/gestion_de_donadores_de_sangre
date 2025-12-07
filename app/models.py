@@ -153,6 +153,11 @@ class Agendamiento(db.Model):
     estado = db.Column(db.String(20), nullable=False, default='pendiente')
     observaciones = db.Column(db.Text, nullable=True)
 
+    peso = db.Column(db.Numeric(precision=5, scale=2), nullable=True)
+    temperatura = db.Column(db.Numeric(precision=4, scale=1), nullable=True)
+    hemoglobina = db.Column(db.Numeric(precision=4, scale=2), nullable=True)
+    presion_arterial = db.Column(db.String(10), nullable=True)
+
     #  Donante que agenda
     donante = db.relationship(
         'Donante',

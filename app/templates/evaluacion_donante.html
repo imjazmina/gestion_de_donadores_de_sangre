@@ -1,96 +1,145 @@
-{% extends "partials/doctor_nav.html" %}
+    {% extends "partials/doctor_nav.html" %}
 
-{% block titulo %}Donador{% endblock %}
-{% block titulo_header %}Perfil del Donador{% endblock %}
+    {% block titulo %}Donador{% endblock %}
+    {% block titulo_header %}Perfil del Donador{% endblock %}
 
-{% set active_page = "citas" %}
+    {% set active_page = "citas" %}
 
-{% block contenido %}
-<header>
-    <link rel="stylesheet" href="../static/css/evaluacion.css">
-</header>
+    {% block contenido %}
+    <header>
+        <link rel="stylesheet" href="../static/css/evaluacion.css">
+    </header>
 
-<!-- === NUEVO HEADER CON FOTO IZQ + INFO DER === -->
-<div class="perfil-header">
-    
-    <!-- FOTO IZQUIERDA -->
-    <div class="perfil-col-der">
-        <img src="{{ url_for('static', filename='img/icono.jpg') }}" class="perfil-foto" alt="Foto">
+    <!-- === NUEVO HEADER CON FOTO IZQ + INFO DER === -->
+    <div class="perfil-header">
+        
+        <!-- FOTO IZQUIERDA -->
+        <div class="perfil-col-der">
+            <img src="{{ url_for('static', filename='img/icono.jpg') }}" class="perfil-foto" alt="Foto">
+        </div>
+
+        <!-- INFO DERECHA -->
+        <div class="perfil-col-izq">
+            <h2>{{ agendamiento.nombre }} {{ agendamiento.apellido }}</h2>
+
+            <span class="estado {{ 'disponible' if agendamiento.disponible_para_donar else 'no-disponible' }}">
+                {{ 'Disponible' if agendamiento.disponible_para_donar else 'No disponible' }}
+            </span>
+
+            <p class="tipo-sangre">
+                <span>🩸</span>
+                Tipo de sangre: <strong>{{ agendamiento.tipo_sangre }}</strong>
+            </p>
+        </div>
+
+    </div>
+    <!-- === GRID DE DATOS DEL DONANTE EN 2 COLUMNAS === -->
+    <div class="datos-donante-grid">
+
+        <div class="dato-item">
+            <label>Edad</label>
+            <p>{{ agendamiento.edad }} años</p>
+        </div>
+
+        <div class="dato-item">
+            <label>Teléfono</label>
+            <p>{{ agendamiento.telefono }}</p>
+        </div>
+
+        <div class="dato-item">
+            <label>Dirección</label>
+            <p>{{ agendamiento.direccion }}</p>
+        </div>
+
+        <div class="dato-item">
+            <label>Última donación</label>
+            <p>{{ agendamiento.ultima_donacion if agendamiento.ultima_donacion else 'No registra' }}</p>
+        </div>
+
     </div>
 
-    <!-- INFO DERECHA -->
-    <div class="perfil-col-izq">
-        <h2>{{ donante.usuario.nombre }} {{ donante.usuario.apellido }}</h2>
+        <h3 class="titulo-form">Verificación de Aptitud</h3>
 
-        <span class="estado {{ 'disponible' if estado_disponible else 'no-disponible' }}">
-            {{ 'Disponible' if estado_disponible else 'No disponible' }}
-        </span>
+    <div class="aptitud-grid">
 
-        <p class="tipo-sangre">
-            <span>🩸</span>
-            Tipo de sangre: <strong>{{ donante.tipo_sangre }}</strong>
-        </p>
+        <div class="campo">
+            <label><span class="icon">⚖️</span> Peso (kg)</label>
+            <input type="number" step="0.1" placeholder="Ej: 65.5">
+        </div>
+
+        <div class="campo">
+            <label><span class="icon">🤍</span> Presión arterial (mmHg)</label>
+            <input type="text" placeholder="Ej: 120/80">
+        </div>
+
+        <div class="campo">
+            <label><span class="icon">🌡️</span> Temperatura (°C)</label>
+            <input type="number" placeholder="Ej: 36.5">
+        </div>
+
+        <div class="campo">
+            <label><span class="icon">🩸</span> Hemoglobina (g/dL)</label>
+            <input type="number" step="0.1" placeholder="Ej: 14.5">
+        </div>
+
+        <div class="campo" id="comentarios-box">
+            <label>Comentarios</label>
+            <textarea name="comentarios" rows="3" placeholder="" type="text"></textarea>
+        </div>
+
+        <div class="campo">
+            <label>Resultado de la evaluación</label>
+            <select name="resultado" required>
+                <option value="">Seleccione...</option>
+                <option value="apto">Aprobado</option>
+                <option value="no_apto">Rechazado</option>
+            </select>
+        </div>
     </div>
 
-</div>
-<!-- === GRID DE DATOS DEL DONANTE EN 2 COLUMNAS === -->
-<div class="datos-donante-grid">
+    <button type="submit" class="btn-guardar">Guardar evaluación</button>
+    </form> 
+    <!--falta un pequeno logout-->
+    {% endblock %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Selecciona el formulario por su ID
+            const form = document.getElementById('form-evaluacion');
+            
+            // 2. Escucha el evento de envío del formulario
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault(); // <-- ¡IMPORTANTE! Detiene el envío HTTP tradicional (recarga de página)
 
-    <div class="dato-item">
-        <label>Edad</label>
-        <p>{{ donante.usuario.edad }} años</p>
-    </div>
+                // Crea un objeto con los datos del formulario
+                const formData = new FormData(form);
+                const url = form.action; 
 
-    <div class="dato-item">
-        <label>Teléfono</label>
-        <p>{{ donante.usuario.telefono }}</p>
-    </div>
+                try {
+                    // 3. Envía los datos de forma asíncrona (AJAX)
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                    });
 
-    <div class="dato-item">
-        <label>Dirección</label>
-        <p>{{ donante.direccion }}</p>
-    </div>
+                    // 4. Parsea la respuesta JSON
+                    const data = await response.json(); 
 
-    <div class="dato-item">
-        <label>Última donación</label>
-        <p>{{ donante.ultima_donacion if donante.ultima_donacion else 'No registra' }}</p>
-    </div>
-
-</div>
-<h3 class="titulo-form">Verificación de Aptitud</h3>
-
-<div class="aptitud-grid">
-
-    <div class="campo">
-        <label><span class="icon">⚖️</span> Peso (kg)</label>
-        <input type="number" step="0.1" placeholder="Ej: 65.5">
-    </div>
-
-    <div class="campo">
-        <label><span class="icon">🤍</span> Presión arterial (mmHg)</label>
-        <input type="text" placeholder="Ej: 120/80">
-    </div>
-
-    <div class="campo">
-        <label><span class="icon">🌡️</span> Temperatura (°C)</label>
-        <input type="number" placeholder="Ej: 36.5">
-    </div>
-
-    <div class="campo">
-        <label><span class="icon">🩸</span> Hemoglobina (g/dL)</label>
-        <input type="number" step="0.1" placeholder="Ej: 14.5">
-    </div>
-
-    <div class="campo checkbox-campo">
-    <label class="checkbox-label">
-        <input type="checkbox" id="apto" name="apto">
-        <span class="checkmark"></span>
-        Apto para donar
-    </label>
-</div>
-
-</div>
-
-<button type="submit" class="btn-guardar">Guardar evaluación</button>
-<!--falta un pequeno logout-->
-{% endblock %}
+                    if (response.ok && data.success) {
+                        // ÉXITO (status 200 y success: true)
+                        alert(`✅ Éxito: ${data.message}`);
+                        
+                        // Opcional: Recargar la página o redirigir después del éxito
+                        // window.location.reload(); 
+                        // window.location.href = "{{ url_for('web_bp.admin') }}"; 
+                    } else {
+                        // ERROR (status 400, 500 o success: false)
+                        // Usa el mensaje de error que enviamos desde Flask
+                        alert(`❌ Error al guardar: ${data.message}`);
+                    }
+                } catch (error) {
+                    // Error de red, conexión o JSON inválido
+                    alert(`❌ Error de conexión o comunicación con el servidor: ${error.message}`);
+                }
+            });
+        });
+    </script>

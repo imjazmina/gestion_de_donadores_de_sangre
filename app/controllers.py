@@ -90,11 +90,14 @@ def calcular_edad(fecha_nacimiento):
     # Restamos el año de nacimiento al año actual.
     # Restamos 1 si la fecha de cumpleaños todavía no ha llegado este año.
     return hoy.year - fecha_nacimiento.year - (
-        (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day)
-    )
+        (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+from datetime import date
+# Asegúrate de tener db, Agendamiento, Donante, Usuario importados
+
 def obtener_agendamientos_dia():
     hoy = date.today()
 
+    # Consulta simple (sin joinedload)
     agendamientos = (
         Agendamiento.query
         .filter(db.func.date(Agendamiento.fecha_turno) == hoy)
@@ -104,41 +107,23 @@ def obtener_agendamientos_dia():
 
     resultado = []
     for ag in agendamientos:
-        # 1. Acceso a los datos del Donante
         donante_obj = ag.donante
         usuario_donante = donante_obj.usuario
 
-        # 2. Acceso a los datos del Receptor
-        nombre_receptor = "—"
-        apellido_receptor = "—"
-        
+        # 1. Determinar el nombre completo del Receptor
+        nombre_completo_receptor = "—" 
         if ag.receptor and ag.receptor.usuario:
             usuario_receptor = ag.receptor.usuario
-            nombre_receptor = usuario_receptor.nombre
-            apellido_receptor = usuario_receptor.apellido
+            nombre_completo_receptor = f"{usuario_receptor.nombre} {usuario_receptor.apellido}"
 
-        # 3. Cálculo de la edad
-        edad = calcular_edad(donante_obj.fecha_nacimiento)
-
+        # 2. Construir el resultado con solo los campos esenciales
         resultado.append({
-            # --- Datos del Agendamiento ---
-            "id_agendamiento": ag.id_agendamiento, # ID del Agendamiento (Nuevo campo solicitado)
-            "fecha_agendamiento": ag.fecha_turno.strftime("%d/%m/%Y %H:%M"),
-            
-            # --- Datos del Donante ---
-            "id_donante": donante_obj.id_donante,
-            "nombre_donante": usuario_donante.nombre,             # Separado
-            "apellido_donante": usuario_donante.apellido,         # Separado
+            "id_donante": ag.id_donante,
+            "id_agendamiento": ag.id_agendamiento,
+            "nombre_completo_donante": f"{usuario_donante.nombre} {usuario_donante.apellido}",
             "tipo_sangre": donante_obj.tipo_sangre,
-            "disponible_para_donar": donante_obj.disponible_para_donar,
-            "edad": edad,
-            "direccion": donante_obj.direccion,
-            "telefono": usuario_donante.telefono,
-            
-            # --- Datos del Receptor ---
-            "nombre_receptor": nombre_receptor,
-            "apellido_receptor": apellido_receptor,
-            "nombre_completo_receptor": f"{nombre_receptor} {apellido_receptor}"
+            "fecha_agendamiento": ag.fecha_turno.strftime("%d/%m/%Y %H:%M"),
+            "nombre_completo_receptor": nombre_completo_receptor,
         })
 
     return resultado
@@ -165,10 +150,71 @@ def obtener_registros_completados():
         })
 
     return resultado
+#mostrar id agendamiento, id donante, edad, nombre, apellido, tipo sangre, direccion, telefono
 
-def obtener_donante(id_donante):
-    donante = Donante.query.get(id_donante)
-    return donante
+def obtener_agendamiento(id_agendamiento):
+
+    agendamiento = Agendamiento.query.get(id_agendamiento)
+    
+    if not agendamiento:
+        raise Exception(f"Agendamiento con ID {id_agendamiento} no encontrado.")
+    
+    # Acceso a las relaciones
+    donante = agendamiento.donante
+    usuario = donante.usuario
+    
+    # Calcula la edad (asumiendo que tienes la función calcular_edad)
+    try:
+        edad = calcular_edad(donante.fecha_nacimiento)
+    except NameError:
+        # Manejo si la función auxiliar no está definida, aunque lo ideal es definirla.
+        edad = "Desconocida" 
+
+    # Construye el diccionario con la información solicitada
+    datos_donante = {
+        "id_donante": donante.id_donante,
+        "id_agendamiento": agendamiento.id_agendamiento, # Incluir el ID del agendamiento para el formulario
+        "nombre": usuario.nombre,
+        "apellido": usuario.apellido,
+        "telefono": usuario.telefono,
+        "ultima_donacion": donante.ultima_donacion.strftime("%d/%m/%Y") if donante.ultima_donacion else "No registra",
+        "disponible_para_donar": donante.disponible_para_donar,
+        "direccion": donante.direccion,
+        "tipo_sangre": donante.tipo_sangre,
+        "edad": edad # Incluimos la edad calculada
+    }
+    
+    return datos_donante # Retornamos un diccionario listo para usar en la plantilla
+
+def guardar_evaluacion(id_agendamiento, resultado, comentarios, peso, temperatura, hemoglobina, presion):
+    agendamiento = Agendamiento.query.get(id_agendamiento)
+    if not agendamiento:
+        raise Exception("El agendamiento no existe")
+    # Guardar signos vitales en el agendamiento
+    agendamiento.peso = peso
+    agendamiento.temperatura = temperatura
+    agendamiento.hemoglobina = hemoglobina
+    agendamiento.presion_arterial = presion
+
+    # Guardar comentarios
+    agendamiento.observaciones = comentarios
+    # Actualizar estado según resultado
+    agendamiento.estado = "completado" if resultado == "apto" else "rechazado"
+
+    # Si fue apto actualizar donante
+    if resultado == "apto":
+        donante = agendamiento.donante
+
+        # Actualizar última fecha de donación
+        donante.ultima_donacion = date.today()
+
+        # No puede donar por 4 meses
+        donante.disponible_para_donar = False
+
+    db.session.commit()
+
+    return agendamiento
+
 
 def actualizar_estado_agendamiento(id_agendamiento, nuevo_estado, observacion, id_doctor):
     agendamiento = Agendamiento.query.get(id_agendamiento)
