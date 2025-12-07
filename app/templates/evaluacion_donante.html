@@ -10,17 +10,31 @@
     <link rel="stylesheet" href="../static/css/evaluacion.css">
 </header>
 
+<!-- === NUEVO HEADER CON FOTO IZQ + INFO DER === -->
 <div class="perfil-header">
-    <h2>{{ donante.usuario.nombre }} {{ donante.usuario.apellido }}</h2>
-    <span class="estado {{ 'disponible' if estado_disponible else 'no-disponible' }}">
-        {{ 'Disponible' if estado_disponible else 'No disponible' }}
-    </span>
+    
+    <!-- FOTO IZQUIERDA -->
+    <div class="perfil-col-der">
+        <img src="{{ url_for('static', filename='img/icono.jpg') }}" class="perfil-foto" alt="Foto">
+    </div>
+
+    <!-- INFO DERECHA -->
+    <div class="perfil-col-izq">
+        <h2>{{ donante.usuario.nombre }} {{ donante.usuario.apellido }}</h2>
+
+        <span class="estado {{ 'disponible' if estado_disponible else 'no-disponible' }}">
+            {{ 'Disponible' if estado_disponible else 'No disponible' }}
+        </span>
+
+        <p class="tipo-sangre">
+            <span>🩸</span>
+            Tipo de sangre: <strong>{{ donante.tipo_sangre }}</strong>
+        </p>
+    </div>
+
 </div>
 
-<p class="tipo-sangre">
-    <span>🩸</span>
-    Tipo de sangre: <strong>{{ donante.tipo_sangre }}</strong>
-</p>
+<!-- === RESTO DEL CONTENIDO (SE QUEDA IGUAL) === -->
 
 <div class="perfil-grid">
     <div class="card-item">
@@ -59,4 +73,5 @@
 
     <button type="submit" class="btn-guardar">Guardar evaluación</button>
 </form>
+
 {% endblock %}
