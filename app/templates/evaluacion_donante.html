@@ -1,7 +1,7 @@
 {% extends "partials/doctor_nav.html" %}
 
-{% block titulo %}Citas{% endblock %}
-{% block titulo_header %}Citas de Donaciones{% endblock %}
+{% block titulo %}Donador{% endblock %}
+{% block titulo_header %}Perfil del Donador{% endblock %}
 
 {% set active_page = "citas" %}
 
@@ -33,45 +33,64 @@
     </div>
 
 </div>
+<!-- === GRID DE DATOS DEL DONANTE EN 2 COLUMNAS === -->
+<div class="datos-donante-grid">
 
-<!-- === RESTO DEL CONTENIDO (SE QUEDA IGUAL) === -->
-
-<div class="perfil-grid">
-    <div class="card-item">
-        <h4>Edad</h4>
+    <div class="dato-item">
+        <label>Edad</label>
         <p>{{ donante.usuario.edad }} años</p>
     </div>
 
-    <div class="card-item">
-        <h4>Teléfono</h4>
+    <div class="dato-item">
+        <label>Teléfono</label>
         <p>{{ donante.usuario.telefono }}</p>
     </div>
 
-    <div class="card-item">
-        <h4>Dirección</h4>
+    <div class="dato-item">
+        <label>Dirección</label>
         <p>{{ donante.direccion }}</p>
     </div>
 
-    <div class="card-item">
-        <h4>Última donación</h4>
+    <div class="dato-item">
+        <label>Última donación</label>
         <p>{{ donante.ultima_donacion if donante.ultima_donacion else 'No registra' }}</p>
     </div>
+
+</div>
+<h3 class="titulo-form">Verificación de Aptitud</h3>
+
+<div class="aptitud-grid">
+
+    <div class="campo">
+        <label><span class="icon">⚖️</span> Peso (kg)</label>
+        <input type="number" step="0.1" placeholder="Ej: 65.5">
+    </div>
+
+    <div class="campo">
+        <label><span class="icon">🤍</span> Presión arterial (mmHg)</label>
+        <input type="text" placeholder="Ej: 120/80">
+    </div>
+
+    <div class="campo">
+        <label><span class="icon">🌡️</span> Temperatura (°C)</label>
+        <input type="number" placeholder="Ej: 36.5">
+    </div>
+
+    <div class="campo">
+        <label><span class="icon">🩸</span> Hemoglobina (g/dL)</label>
+        <input type="number" step="0.1" placeholder="Ej: 14.5">
+    </div>
+
+    <div class="campo checkbox-campo">
+    <label class="checkbox-label">
+        <input type="checkbox" id="apto" name="apto">
+        <span class="checkmark"></span>
+        Apto para donar
+    </label>
 </div>
 
-<h3 class="titulo-form">Verificación de aptitud</h3>
+</div>
 
-<form class="form-evaluacion">
-    <label>Aptitud</label>
-    <select name="aptitud" required>
-        <option value="">Seleccione...</option>
-        <option value="apto">Apto</option>
-        <option value="no_apto">No apto</option>
-    </select>
-
-    <label>Notas del profesional</label>
-    <textarea name="notas" rows="3" placeholder="Escriba observaciones..."></textarea>
-
-    <button type="submit" class="btn-guardar">Guardar evaluación</button>
-</form>
-
+<button type="submit" class="btn-guardar">Guardar evaluación</button>
+<!--falta un pequeno logout-->
 {% endblock %}

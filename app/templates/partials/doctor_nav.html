@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}{% endblock %} | Banco de Sangre</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+
+<body>
+  <aside class="sidebar">
+    <div>
+      <h1 class="logo">Banco de Sangre</h1>
+      <nav>
+        <a href="{{ url_for('donaciones_web.listar_agendamientos') }}"
+           class="{% if active_page=='citas' %}active{% endif %}">
+          Citas
+        </a>
+
+        <a href="{{ url_for('donaciones_web.listar_agendamientos_completados') }}"
+           class="{% if active_page=='completados' %}active{% endif %}">
+          Registros
+        </a>
+
+        <a href="#">Solicitud de Donante</a>
+      </nav>
+    </div>
+    <div class="bottom">
+      <a href="{{ url_for('donaciones_web.logout') }}">Cerrar sesión</a>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="header">
+      <h2>{% block titulo_header %}{% endblock %}</h2>
+      <div class="user">
+        <img src="{{ url_for('static', filename='img/icono.jpg') }}" alt="">
+        Doctor
+      </div>
+    </header>
+
+    <div class="tabla-container">
+      {% block contenido %}{% endblock %}
+    </div>
+
+  </div>
+
+</body>
+</html>

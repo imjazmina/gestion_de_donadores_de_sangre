@@ -1,5 +1,5 @@
 from app.models import SolicitudDonante, Agendamiento, Usuario, Donante
-from datetime import datetime
+from datetime import date, datetime
 from app import db
 from werkzeug.security import generate_password_hash
 
@@ -83,18 +83,92 @@ def crear_solicitud(id_donante, tipo_sangre, cantidad, fecha_solicitud, comentar
         raise e
 
 #doctores
-def obtener_agendamientos():
-    agendamientos = Agendamiento.query.all()
-    return [
-        {
-        "id_agendamiento" : a.id_agendamiento,
-        "nombre_paciente": f"{a.donante.usuario.nombre} {a.donante.usuario.apellido}",
-        "fecha_turno": a.fecha_turno.strftime("%Y-%m-%d %H:%M"),
-        "estado" : a.estado,
-        "observaciones" : a.observaciones
-        } 
-        for a in agendamientos
-    ]
+# Función auxiliar para calcular la edad
+def calcular_edad(fecha_nacimiento):
+    """Calcula la edad a partir de la fecha de nacimiento."""
+    hoy = date.today()
+    # Restamos el año de nacimiento al año actual.
+    # Restamos 1 si la fecha de cumpleaños todavía no ha llegado este año.
+    return hoy.year - fecha_nacimiento.year - (
+        (hoy.month, hoy.day) < (fecha_nacimiento.month, fecha_nacimiento.day)
+    )
+def obtener_agendamientos_dia():
+    hoy = date.today()
+
+    agendamientos = (
+        Agendamiento.query
+        .filter(db.func.date(Agendamiento.fecha_turno) == hoy)
+        .order_by(Agendamiento.fecha_turno.asc())
+        .all()
+    )
+
+    resultado = []
+    for ag in agendamientos:
+        # 1. Acceso a los datos del Donante
+        donante_obj = ag.donante
+        usuario_donante = donante_obj.usuario
+
+        # 2. Acceso a los datos del Receptor
+        nombre_receptor = "—"
+        apellido_receptor = "—"
+        
+        if ag.receptor and ag.receptor.usuario:
+            usuario_receptor = ag.receptor.usuario
+            nombre_receptor = usuario_receptor.nombre
+            apellido_receptor = usuario_receptor.apellido
+
+        # 3. Cálculo de la edad
+        edad = calcular_edad(donante_obj.fecha_nacimiento)
+
+        resultado.append({
+            # --- Datos del Agendamiento ---
+            "id_agendamiento": ag.id_agendamiento, # ID del Agendamiento (Nuevo campo solicitado)
+            "fecha_agendamiento": ag.fecha_turno.strftime("%d/%m/%Y %H:%M"),
+            
+            # --- Datos del Donante ---
+            "id_donante": donante_obj.id_donante,
+            "nombre_donante": usuario_donante.nombre,             # Separado
+            "apellido_donante": usuario_donante.apellido,         # Separado
+            "tipo_sangre": donante_obj.tipo_sangre,
+            "disponible_para_donar": donante_obj.disponible_para_donar,
+            "edad": edad,
+            "direccion": donante_obj.direccion,
+            "telefono": usuario_donante.telefono,
+            
+            # --- Datos del Receptor ---
+            "nombre_receptor": nombre_receptor,
+            "apellido_receptor": apellido_receptor,
+            "nombre_completo_receptor": f"{nombre_receptor} {apellido_receptor}"
+        })
+
+    return resultado
+
+def obtener_registros_completados():
+    agendamientos = (
+        Agendamiento.query
+        .filter(Agendamiento.estado == "confirmado")
+        .order_by(Agendamiento.fecha_turno.desc())
+        .all()
+    )
+
+    resultado = []
+
+    for ag in agendamientos:
+        resultado.append({
+            "id_donante": ag.id_donante,
+            "id_agendamiento": ag.id_agendamiento,
+            "nombre_paciente": f"{ag.donante.usuario.nombre} {ag.donante.usuario.apellido}",
+            "nombre_receptor": f"{ag.receptor.usuario.nombre} {ag.receptor.usuario.apellido}" if ag.receptor else "—",
+            "fecha_turno": ag.fecha_turno.strftime("%d/%m/%Y %H:%M"),
+            "pdf_evaluacion": f"storage/pdf/evaluaciones/{ag.id_agendamiento}.pdf",
+            "pdf_formulario": f"storage/pdf/formularios/{ag.id_agendamiento}.pdf"
+        })
+
+    return resultado
+
+def obtener_donante(id_donante):
+    donante = Donante.query.get(id_donante)
+    return donante
 
 def actualizar_estado_agendamiento(id_agendamiento, nuevo_estado, observacion, id_doctor):
     agendamiento = Agendamiento.query.get(id_agendamiento)

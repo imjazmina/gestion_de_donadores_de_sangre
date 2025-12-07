@@ -68,15 +68,58 @@ def crear_solicitud_donantes():
 
 #funcionalidad doctor
 #visualizar solicitudes de agendamiento nombre del paciente, fecha, estado y observacion
+
 @web_bp.route('/doctor', methods=['GET'])
 @rol_required('doctor')
 def listar_agendamientos():
     try:
-        data = donaciones_controller.obtener_agendamientos()
-        return render_template('admin.html', data=data)
+        data = donaciones_controller.obtener_agendamientos_dia()
+        print(data)
+        return render_template('admin.html', data=data,  active_page='citas')
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@web_bp.route('/doctor/completados', methods=['GET'])
+@rol_required('doctor')
+def listar_agendamientos_completados():
+    try:
+        data = donaciones_controller.obtener_registros_completados()
+        return render_template('admin.html', data=data,active_page='completados') 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@web_bp.route('/evaluacion/<int:id_donante>')
+def mostrar_evaluacion(id_donante):
+    donante = donaciones_controller.obtener_donante(id_donante)
+    return render_template('evaluacion_donante.html', donante=donante)
+
+
+'''#obtener perfil donante para evaluar su donacion
+@web_bp.route('/donante/<int:id_donante>')
+def perfil_donante(id_donante):
+    donante = donaciones_controller.obtener_donante(id_donante)
+    ultima_donacion = donaciones_controller.obtener_ultima_donacion(id_donante)
+    estado_disponible = donaciones_controller.esta_disponible(id_donante)
+
+    return render_template(
+        'donantes/perfil_donante.html',
+        donante=donante,
+        ultima_donacion=ultima_donacion,
+        estado_disponible=estado_disponible
+    )
+guardar form con pre evaluacion del donante
+@web_bp.route('/donante/<int:id_donante>/evaluar', methods=['POST'])
+def guardar_evaluacion(id_donante):
+    aptitud = request.form.get('aptitud')
+    notas = request.form.get('notas')
+
+    try:
+        donaciones_controller.guardar_evaluacion(id_donante, aptitud, notas)
+        return jsonify({"mensaje": "Evaluación guardada correctamente", "status": "success"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    return redirect(url_for('donantes_web.perfil_donante', id_donante=id_donante))'''
 #cambiar estado de agendamientp de donacion confirmado/cancelar
 @web_bp.route('/agendamientos/<int:id_agendamiento>', methods = ['PUT'])
 @rol_required('doctor')
