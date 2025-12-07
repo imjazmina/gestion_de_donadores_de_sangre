@@ -1,51 +1,50 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Banco de Sangre. Doctor</title>
-  <link rel="stylesheet" href="../static/css/citas.css">
-  <script defer src="js\citas.js"></script>
-</head>
-<body>
-  <aside class="sidebar">
-    <div>
-      <div class="logo">BBanco de Sangre</div>
-      <nav>
-        <a href="solicitudes.html">Solicitudes</a>
-        <a href="citas.html" class="active">Citas</a>
-        <a href="informes.html" class="active">Informes</a>
-        <a href="formularios.html" class="active">Formularios</a>
+{% extends "partials/doctor_nav.html" %}
 
-      </nav>
-    </div>
-    <div class="bottom">Cerrar sesión</div>
-  </aside>
+{% block titulo %}Citas{% endblock %}
+{% block titulo_header %}Gestión de Citas{% endblock %}
 
-  <div class="main">
-    <header class="header">
-      <h2>Gestión de Citas</h2>
-      <div class="user"><img src="#" alt=""> Admin</div>
-    </header>
+{% set active_page = "citas" %}
 
-    <div class="content">
-      <table class="table">
+{% block contenido %}
+    <table class="tabla-agendamientos">
         <thead>
-          <tr>
-            <th>Donante</th>
-            <th>Fecha/Hora</th>
-            <th>Banco</th>
-            <th>Tipo</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
+            <tr>
+                <th>Donante</th>
+                <th>Receptor</th>
+                <th>Fecha del turno</th>
+                <th>Acciones</th>
+            </tr>
         </thead>
+
         <tbody>
-      
-          
+            {% for item in data %}
+            <tr>
+                <td>{{ item.nombre_paciente }}</td>
+                <td>{{ item.nombre_receptor }}</td>
+                <td>{{ item.fecha_turno }}</td>
+                <td>
+                    <a href="{{ url_for('donaciones_web.mostrar_evaluacion', id_donante=1) }}" class="btn-ver">Evaluación</a>
+                </td>
+            </tr>
+            {% endfor %}
         </tbody>
-      </table>
-    </div>
-  </div>
+    </table>
+{% endblock %}
+
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+  let filas = [...document.querySelectorAll("tbody tr")];
+
+  filas.sort((a, b) => {
+    const fechaA = new Date(a.children[2].innerText);
+    const fechaB = new Date(b.children[2].innerText);
+    return fechaA - fechaB;
+  });
+
+  const tbody = document.querySelector("tbody");
+  tbody.innerHTML = "";
+  filas.forEach(f => tbody.appendChild(f));
+});
+</script>
 </body>
 </html>

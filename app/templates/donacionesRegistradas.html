@@ -1,0 +1,34 @@
+{% extends "partials/doctor_nav.html" %}
+
+{% block titulo %}Registros% endblock %}
+{% block titulo_header %}Registros de Donaciones{% endblock %}
+
+{% set active_page = "completados" %}
+
+{% block contenido %}
+    <div class="tabla-container">
+      <table class="tabla-agendamientos">
+        <thead>
+          <tr>
+            <th>Donante</th>
+            <th>Receptor</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for item in data %}
+          <tr>
+            <td>{{ item.nombre_paciente }}</td>
+            <td>{{ item.nombre_receptor }}</td>
+            <td>{{ item.fecha_turno }}</td>
+            <td>
+              <a class="btn-ver" href="{{ item.pdf_evaluacion }}" target="_blank">Evaluación PDF</a>
+              <a class="btn-pdf" href="{{ item.pdf_formulario }}" target="_blank">Formulario PDF</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+{% endblock %}
