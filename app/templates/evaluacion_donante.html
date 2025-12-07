@@ -1,0 +1,62 @@
+{% extends "partials/doctor_nav.html" %}
+
+{% block titulo %}Citas{% endblock %}
+{% block titulo_header %}Citas de Donaciones{% endblock %}
+
+{% set active_page = "citas" %}
+
+{% block contenido %}
+<header>
+    <link rel="stylesheet" href="../static/css/evaluacion.css">
+</header>
+
+<div class="perfil-header">
+    <h2>{{ donante.usuario.nombre }} {{ donante.usuario.apellido }}</h2>
+    <span class="estado {{ 'disponible' if estado_disponible else 'no-disponible' }}">
+        {{ 'Disponible' if estado_disponible else 'No disponible' }}
+    </span>
+</div>
+
+<p class="tipo-sangre">
+    <span>🩸</span>
+    Tipo de sangre: <strong>{{ donante.tipo_sangre }}</strong>
+</p>
+
+<div class="perfil-grid">
+    <div class="card-item">
+        <h4>Edad</h4>
+        <p>{{ donante.usuario.edad }} años</p>
+    </div>
+
+    <div class="card-item">
+        <h4>Teléfono</h4>
+        <p>{{ donante.usuario.telefono }}</p>
+    </div>
+
+    <div class="card-item">
+        <h4>Dirección</h4>
+        <p>{{ donante.direccion }}</p>
+    </div>
+
+    <div class="card-item">
+        <h4>Última donación</h4>
+        <p>{{ donante.ultima_donacion if donante.ultima_donacion else 'No registra' }}</p>
+    </div>
+</div>
+
+<h3 class="titulo-form">Verificación de aptitud</h3>
+
+<form class="form-evaluacion">
+    <label>Aptitud</label>
+    <select name="aptitud" required>
+        <option value="">Seleccione...</option>
+        <option value="apto">Apto</option>
+        <option value="no_apto">No apto</option>
+    </select>
+
+    <label>Notas del profesional</label>
+    <textarea name="notas" rows="3" placeholder="Escriba observaciones..."></textarea>
+
+    <button type="submit" class="btn-guardar">Guardar evaluación</button>
+</form>
+{% endblock %}

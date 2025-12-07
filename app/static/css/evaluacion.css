@@ -1,0 +1,121 @@
+/* === Card del perfil === */
+.perfil-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* Header */
+.perfil-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.perfil-header h2 {
+    font-size: 22px;
+}
+
+.estado {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.estado.disponible {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.estado.no-disponible {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Tipo de sangre */
+.tipo-sangre {
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+/* Cards internas */
+.perfil-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.card-item {
+    background: #f8fafc;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.card-item h4 {
+    margin-bottom: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e3a8a;
+}
+
+/* Formulario */
+.titulo-form {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.form-evaluacion label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.form-evaluacion select,
+.form-evaluacion textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 5px;
+    font-size: 15px;
+}
+
+.btn-guardar {
+    margin-top: 15px;
+    width: 100%;
+    background: #1e3a8a;
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-guardar:hover {
+    background: #3b82f6;
+}
+
+/* === Responsivo === */
+@media (max-width: 768px) {
+
+    .main {
+        margin-left: 0;   /* sidebar oculto o arriba */
+    }
+
+    .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+    }
+
+    .perfil-card {
+        max-width: 100%;
+    }
+}
