@@ -6,32 +6,33 @@
 {% set active_page = "completados" %}
 
 {% block contenido %}
-    <div class="tabla-container">
-      <table class="tabla-agendamientos">
-        <thead>
-          <tr>
-            <th>Donante</th>
-            <th>Receptor</th>
-            <th>Fecha</th>
-            <th>Tipo de Sangre</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
+<table class="tabla-agendamientos">
+  <thead>
+    <tr>
+      <th>Donante</th>
+      <th>Receptor</th>
+      <th>Fecha</th>
+      <th>Tipo de Sangre</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
 
-        <tbody>
-          {% for item in data %}
-          <tr>
-            <td>{{ item.nombre_completo_donante }}</td>
-            <td>{{ item.nombre_completo_receptor }}</td>
-            <td>{{ item.fecha_agendamiento }}</td>
-            <td style="text-align: center;">{{ item.tipo_sangre }}</td>
-            <td>{{ item.estado_agendamiento }}</td>
-            <td  style="text-align: center;">
-              <a class="btn-ver" href="#"" target="_blank">Ver</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+  <tbody>
+    {% for item in data %}
+    <tr>
+      <td>{{ item.nombre_completo_donante }}</td>
+      <td>{{ item.nombre_completo_receptor }}</td>
+      <td>{{ item.fecha_agendamiento }}</td>
+      <td style="text-align: center;">{{ item.tipo_sangre }}</td>
+      <td>{{ item.estado_agendamiento }}</td>
+      <td  style="text-align: center;">
+        <a href="{{ url_for('donaciones_web.mostrar_registro_evaluacion', id_agendamiento=item.id_agendamiento) }}" class="btn-ver">
+          Ver
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 {% endblock %}

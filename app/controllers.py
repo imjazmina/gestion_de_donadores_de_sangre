@@ -1,3 +1,4 @@
+from operator import or_
 from app.models import SolicitudDonante, Agendamiento, Usuario, Donante
 from datetime import date, datetime
 from app import db
@@ -131,8 +132,10 @@ def obtener_agendamientos_dia():
 def obtener_registros_completados():
     agendamientos = (
         Agendamiento.query
-        .filter(Agendamiento.estado == "completado")
-        .order_by(Agendamiento.fecha_turno.desc())
+            .filter(or_(
+            Agendamiento.estado == "completado",
+            Agendamiento.estado == "rechazado"
+    ))
         .all()
     )
     

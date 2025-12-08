@@ -83,7 +83,6 @@ def listar_agendamientos():
 def listar_agendamientos_completados():
     try:
         data = donaciones_controller.obtener_registros_completados()
-        print(data)
         return render_template('donacionesRegistradas.html', data=data ,active_page='completados') 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -99,6 +98,18 @@ def mostrar_evaluacion(id_agendamiento):
     
     except Exception as e:
         return render_template('evaluacion_donante.html', agendamiento=agendamiento )
+
+@web_bp.route('/registro-evaluacion/<int:id_agendamiento>')
+def mostrar_registro_evaluacion(id_agendamiento):
+    try:
+    # Tendrías que obtener el agendamiento y luego el donante
+        agendamiento = donaciones_controller.obtener_agendamiento(id_agendamiento)
+        # Pasa el objeto completo del agendamiento a la plantilla
+        return render_template('registroDonacion.html', agendamiento=agendamiento)
+    
+    except Exception as e:
+        return render_template('registroDonacion.html', agendamiento=agendamiento )
+
 
 # Función auxiliar para manejar cadenas vacías y conversión segura
 def safe_float(value):
@@ -148,6 +159,7 @@ def guardar_evaluacion(id_agendamiento):
             "message": "Evaluación guardada con éxito."
         }), 200 
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 500
 #cambiar estado de agendamientp de donacion confirmado/cancelar
 @web_bp.route('/agendamientos/<int:id_agendamiento>', methods = ['PUT'])
