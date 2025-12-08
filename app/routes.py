@@ -102,11 +102,8 @@ def mostrar_evaluacion(id_agendamiento):
 @web_bp.route('/registro-evaluacion/<int:id_agendamiento>')
 def mostrar_registro_evaluacion(id_agendamiento):
     try:
-    # Tendrías que obtener el agendamiento y luego el donante
-        agendamiento = donaciones_controller.obtener_agendamiento(id_agendamiento)
-        # Pasa el objeto completo del agendamiento a la plantilla
+        agendamiento = donaciones_controller.obtener_registro_agendamiento(id_agendamiento)
         return render_template('registroDonacion.html', agendamiento=agendamiento)
-    
     except Exception as e:
         return render_template('registroDonacion.html', agendamiento=agendamiento )
 

@@ -190,12 +190,71 @@ def obtener_agendamiento(id_agendamiento):
         "telefono": usuario.telefono,
         "ultima_donacion": donante.ultima_donacion.strftime("%d/%m/%Y") if donante.ultima_donacion else "No registra",
         "disponible_para_donar": donante.disponible_para_donar,
+        "estado": agendamiento.estado,
         "direccion": donante.direccion,
         "tipo_sangre": donante.tipo_sangre,
         "edad": edad # Incluimos la edad calculada
     }
     
     return datos_donante # Retornamos un diccionario listo para usar en la plantilla
+
+def obtener_registro_agendamiento(id_agendamiento):
+
+    ag = Agendamiento.query.get(id_agendamiento)
+    
+    if not ag:
+        raise Exception(f"Agendamiento con ID {id_agendamiento} no encontrado.")
+    
+    donante = ag.donante
+    usuario = donante.usuario
+
+    # ===============================
+    # 1. Determinar nombre completo del receptor 
+    # ===============================
+    nombre_completo_receptor = "—"
+
+    if ag.receptor and ag.receptor.usuario:
+        nombre_completo_receptor = (
+            f"{ag.receptor.usuario.nombre} {ag.receptor.usuario.apellido}"
+        )
+
+    # Cálculo de edad
+    try:
+        edad = calcular_edad(donante.fecha_nacimiento)
+    except NameError:
+        edad = "Desconocida"
+
+    datos_agendamiento = {
+        "id_agendamiento": ag.id_agendamiento,
+        "id_donante": donante.id_donante,
+
+        # Donante
+        "nombre": usuario.nombre,
+        "apellido": usuario.apellido,
+        "telefono": usuario.telefono,
+        "direccion": donante.direccion,
+        "tipo_sangre": donante.tipo_sangre,
+        "edad": edad,
+        "ultima_donacion": donante.ultima_donacion.strftime("%d/%m/%Y") if donante.ultima_donacion else "No registra",
+        "disponible_para_donar": donante.disponible_para_donar,
+
+        # Estado del agendamiento
+        "estado": ag.estado,
+        "observaciones": ag.observaciones,
+
+        # Datos clínicos
+        "peso": float(ag.peso) if ag.peso is not None else None,
+        "temperatura": float(ag.temperatura) if ag.temperatura is not None else None,
+        "hemoglobina": float(ag.hemoglobina) if ag.hemoglobina is not None else None,
+        "presion_arterial": ag.presion_arterial,
+
+        # Receptor
+        "id_receptor": ag.id_receptor,
+        "receptor_nombre_completo": nombre_completo_receptor
+    }
+
+    return datos_agendamiento
+
 
 # En tu donaciones_controller.py
 def guardar_evaluacion(id_agendamiento, resultado, comentarios, peso, temperatura, hemoglobina, presion):

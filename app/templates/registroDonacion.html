@@ -33,11 +33,11 @@
     <div class="perfil-col-der">
         <div class="info-box">
             <p class="label">Fecha de donación</p>
-            <p class="value">4 de diciembre de 2025</p>
+            <p class="value">{{agendamiento.ultima_donacion}}</p>
             <p class="label">Receptor</p>
-            <p class="value">Hospital Central - Urgencias</p>
-            <span class="estado {{ 'aceptado' if agendamiento.disponible_para_donar else 'rechazado' }}">
-            {{ 'Aceptado' if agendamiento.disponible_para_donar else 'Rechazado' }}
+            <p class="value">{{ agendamiento.receptor_nombre_completo }}</p>
+            <span class="estado {{ 'aceptado' if agendamiento.estado else 'rechazado' }}">
+            {{ 'Aceptado' if agendamiento.estado else 'Rechazado' }}
         </span>
         </div>
 
@@ -55,7 +55,7 @@
 
     <div class="vital-box">
         <p class="vital-label">Presión</p>
-        <p class="vital-value">{{ agendamiento.presion or "-" }}</p>
+        <p class="vital-value">{{ agendamiento.presion_arterial or "-" }}</p>
     </div>
 
     <div class="vital-box">
