@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request, render_template, session, redirect, url_for
+from flask import Blueprint, jsonify, request, render_template, session, redirect, url_for, send_file
 from app import controllers as donaciones_controller
 from app.auth import login_required, rol_required
 
@@ -107,6 +107,10 @@ def mostrar_registro_evaluacion(id_agendamiento):
     except Exception as e:
         return render_template('registroDonacion.html', agendamiento=agendamiento )
 
+@web_bp.route("/pdf/agendamientos")
+def descargar_pdf_agendamientos():
+    archivo = donaciones_controller.generar_pdf_agendamientos()
+    return send_file(archivo, as_attachment=True)
 
 # Función auxiliar para manejar cadenas vacías y conversión segura
 def safe_float(value):

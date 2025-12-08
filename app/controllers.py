@@ -3,6 +3,13 @@ from app.models import SolicitudDonante, Agendamiento, Usuario, Donante
 from datetime import date, datetime
 from app import db
 from werkzeug.security import generate_password_hash
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from datetime import datetime
+import os
+from flask import current_app
 
 def obtener_solicitudes_aprobadas():
     solicitudes = (
@@ -282,6 +289,115 @@ def guardar_evaluacion(id_agendamiento, resultado, comentarios, peso, temperatur
     except Exception as e:
         db.session.rollback()
         raise e
+
+def generar_pdf_agendamientos():
+
+    # Carpeta destino
+    ruta_carpeta = os.path.join(current_app.root_path, "static", "pdf")
+    if not os.path.exists(ruta_carpeta):
+        os.makedirs(ruta_carpeta)
+
+    ruta_archivo = os.path.join(ruta_carpeta, "registros_agendamientos.pdf")
+    # Obtener registros
+    agendamientos = (
+        Agendamiento.query
+            .filter(or_(
+            Agendamiento.estado == "completado",
+            Agendamiento.estado == "rechazado"
+    ))
+        .all()
+    )
+
+    styles = getSampleStyleSheet()
+    titulo = Paragraph("Reporte de Agendamientos de Donación", styles["Title"])
+    fecha_gen = Paragraph(f"Generado el {datetime.now().strftime('%d/%m/%Y %H:%M')}", styles["Normal"])
+
+    # Encabezados exactos solicitados
+    tabla_data = [
+        [
+            "Donante",
+            "Teléfono",
+            "Dirección",
+            "Tipo Sangre",
+            "Edad",
+            "Receptor",
+            "Fecha Turno",
+            "Estado",
+            "Peso (kg)",
+            "Temp (°C)",
+            "Hemoglobina",
+            "Presión"
+        ]
+    ]
+
+    for ag in agendamientos:
+
+        # === DONANTE ===
+        don = ag.donante
+        user_don = don.usuario
+
+        nombre_donante = f"{user_don.nombre} {user_don.apellido}"
+        telefono = user_don.telefono or "—"
+        direccion = don.direccion or "—"
+        tipo_sangre = don.tipo_sangre
+        try:
+            edad = calcular_edad(don.fecha_nacimiento)
+        except:
+            edad = "—"
+
+        # === RECEPTOR ===
+        if ag.receptor and ag.receptor.usuario:
+            ur = ag.receptor.usuario
+            nombre_receptor = f"{ur.nombre} {ur.apellido}"
+        else:
+            nombre_receptor = "—"
+
+        # === FECHA ===
+        fecha_turno = ag.fecha_turno.strftime("%d/%m/%Y %H:%M")
+
+        # === DATOS CLÍNICOS ===
+        peso = str(ag.peso) if ag.peso else "—"
+        temperatura = str(ag.temperatura) if ag.temperatura else "—"
+        hemoglobina = str(ag.hemoglobina) if ag.hemoglobina else "—"
+        presion = ag.presion_arterial if ag.presion_arterial else "—"
+
+        tabla_data.append([
+            nombre_donante,
+            telefono,
+            direccion,
+            tipo_sangre,
+            edad,
+            nombre_receptor,
+            fecha_turno,
+            ag.estado,
+            peso,
+            temperatura,
+            hemoglobina,
+            presion
+        ])
+
+    # Crear PDF
+    doc = SimpleDocTemplate(ruta_archivo, pagesize=letter)
+    elementos = [titulo, fecha_gen, Spacer(1, 20)]
+
+    tabla = Table(tabla_data, repeatRows=1)
+
+    # Estilos visuales
+    tabla.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), colors.HexColor("#1e3a8a")),
+        ('TEXTCOLOR', (0,0), (-1,0), colors.white),
+        ('FONTNAME', (0,0), (-1,0), 'Helvetica-Bold'),
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('GRID', (0,0), (-1,-1), 0.6, colors.grey),
+        ('BACKGROUND', (0,1), (-1,-1), colors.whitesmoke),
+        ('FONTSIZE', (0,0), (-1,-1), 9),
+    ]))
+
+    elementos.append(tabla)
+    doc.build(elementos)
+
+    return ruta_archivo
+
 
 def actualizar_estado_agendamiento(id_agendamiento, nuevo_estado, observacion, id_doctor):
     agendamiento = Agendamiento.query.get(id_agendamiento)

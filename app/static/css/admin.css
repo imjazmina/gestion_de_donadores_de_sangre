@@ -229,7 +229,8 @@ footer {
     padding: 5px 10px;
   }
 }
-/* === Sidebar fijo ya integrado === */
+/* === Sidebar fijo ya integr
+ado === */
 .sidebar {
     position: fixed;
     top: 0;
@@ -370,6 +371,21 @@ footer {
     cursor: pointer;
     transition: 0.2s;
     text-decoration: none;
+
+}
+
+.btn-reporte  {
+    width: 100%;
+    background: #1e3a8a;
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    text-decoration: none;
+    margin: 0 auto;
 
 }
 
