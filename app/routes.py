@@ -218,41 +218,29 @@ def eliminar_doctor(id_doctor):
     donaciones_controller.eliminar_doctor(id_doctor)
     return redirect(url_for('donaciones_web.listar_doctores'))
 
+@web_bp.route('/doctor/nuevo', methods=['GET'])
+def form_crear_doctor():
+    return render_template('crear_doctor.html')
 
+@web_bp.route('/doctor/crear', methods=['POST'])
+def crear_doctor():
+    nombre = request.form.get('nombre')
+    apellido = request.form.get('apellido')
+    email = request.form.get('email')
+    telefono = request.form.get('telefono')
+    contrasena = request.form.get('contrasena')
+    especialidad = request.form.get('especialidad')
+    matricula = request.form.get('matricula')
+    print(nombre, apellido, email, telefono, contrasena, especialidad, matricula)
+    creado = donaciones_controller.crear_doctor(
+        nombre, apellido, email, telefono, contrasena, especialidad, matricula
+    )
 
+    if not creado:
+        return "Error al crear doctor", 400
 
-# abm usuario
-@web_bp.route('/admin', methods=['POST'])
-@rol_required('admin')
-def crear_usuario():
-    data = request.get_json()
-    nuevo = donaciones_controller.crear_usuario(data)
-    return jsonify(nuevo), 201
+    return redirect(url_for('donaciones_web.listar_doctores'))
 
-@web_bp.route('/admin/<int:id_usuario>', methods=['GET'])
-@rol_required('admin')
-def obtener_usuario(id_usuario):
-    usuario = donaciones_controller.obtener_usuario(id_usuario)
-    if not usuario:
-        return jsonify({"error": "Usuario no encontrado"}), 404
-    return jsonify(usuario), 200
-
-@web_bp.route('/admin/<int:id_usuario>', methods=['PUT'])
-@rol_required('admin')
-def actualizar_usuario(id_usuario):
-    data = request.get_json()
-    actualizado = donaciones_controller.actualizar_usuario(id_usuario, data)
-    if not actualizado:
-        return jsonify({"error": "Usuario no encontrado"}), 404
-    return jsonify(actualizado), 200
-
-@web_bp.route('/admin/<int:id_usuario>', methods=['DELETE'])
-@rol_required('admin')
-def eliminar_usuario(id_usuario):
-    eliminado = donaciones_controller.eliminar_usuario(id_usuario)
-    if not eliminado:
-        return jsonify({"error": "Usuario no encontrado"}), 404
-    return jsonify({"mensaje": "Usuario desactivado correctamente"}), 200
 
 @web_bp.route('/login', methods=['GET', 'POST'])
 def login():

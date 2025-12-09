@@ -549,52 +549,37 @@ def actualizar_doctor(id_doctor, nombre, apellido, correo, telefono, especialida
     db.session.commit()
     return True
 
-# admin
-#abm usuarios
-def crear_usuario(data):
-    nuevo_usuario = Usuario(
-        nombre=data.get('nombre'),
-        apellido=data.get('apellido'),
-        email=data.get('email'),
-        contrasena=generate_password_hash(data.get('contrasena')),
-        rol=data.get('rol')
+def crear_doctor(nombre, apellido, email, telefono, contrasena, especialidad, matricula):
+
+    # Verificar si ya existe un usuario con ese email
+    if Usuario.query.filter_by(email=email).first():
+        return False
+
+    # Crear usuario base
+    usuario = Usuario(
+        nombre=nombre,
+        apellido=apellido,
+        email=email,
+        telefono=telefono,
+        contrasena=contrasena,
+        rol="doctor",
+        activo=True
     )
-    db.session.add(nuevo_usuario)
+    db.session.add(usuario)
+    db.session.commit()  # para obtener el id_usuario
+
+    # Crear doctor vinculado
+    doctor = Doctor(
+        id_usuario=usuario.id_usuario,
+        especialidad=especialidad,
+        matricula=matricula,
+    )
+
+    db.session.add(doctor)
     db.session.commit()
-    return nuevo_usuario.to_dict()
 
-def obtener_usuarios():
-    usuarios = Usuario.query.all()
-    return [u.to_dict() for u in usuarios]
+    return doctor
 
-def obtener_usuario(id_usuario):
-    usuario = Usuario.query.get(id_usuario)
-    return usuario.to_dict() if usuario else None
-
-def actualizar_usuario(id_usuario, data):
-    usuario = Usuario.query.get(id_usuario)
-    if not usuario:
-        return None
-
-    usuario.nombre = data.get('nombre', usuario.nombre)
-    usuario.apellido = data.get('apellido', usuario.apellido)
-    usuario.email = data.get('email', usuario.email)
-    usuario.rol = data.get('rol', usuario.rol)
-
-    if 'contrasena' in data:
-        usuario.contrasena = generate_password_hash(data['contrasena'])
-
-    db.session.commit()
-    return usuario.to_dict()
-
-def eliminar_usuario(id_usuario):
-    usuario = Usuario.query.get(id_usuario)
-    if not usuario:
-        return None
-    
-    usuario.activo = False
-    db.session.commit()
-    return True
 
 def login_usuario(email, contrasena):
 

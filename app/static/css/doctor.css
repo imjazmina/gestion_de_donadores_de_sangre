@@ -76,3 +76,38 @@ a{
 .btn-icon.eliminar:hover i {
     color: #b91c1c;
 }
+.header-acciones {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.titulo-vista {
+    font-size: 26px;
+    color: #1f2d3d;
+    font-weight: 600;
+}
+
+.btn-nuevo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #0ea5e9;      /* celeste tipo el de la imagen */
+    color: white;
+    padding: 10px 18px;
+    border-radius: 22px;
+    font-size: 15px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: 0.2s ease-in-out;
+}
+
+.btn-nuevo span {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.btn-nuevo:hover {
+    background: #0284c7;
+}
