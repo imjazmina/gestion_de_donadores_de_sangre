@@ -202,6 +202,38 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 }); 
+document.addEventListener("DOMContentLoaded", () => {
+
+  const buttons = document.querySelectorAll(".accordion-btn");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+
+      const content = btn.nextElementSibling;
+
+      // Cerrar todos excepto el actual
+      document.querySelectorAll(".accordion-btn").forEach(otherBtn => {
+        if (otherBtn !== btn) {
+          otherBtn.classList.remove("active");
+          otherBtn.nextElementSibling.style.display = "none";
+        }
+      });
+
+      // Alternar el actual
+      if (btn.classList.contains("active")) {
+        btn.classList.remove("active");
+        content.style.display = "none";
+      } else {
+        btn.classList.add("active");
+        content.style.display = "block";
+      }
+
+    });
+  });
+
+});
+
+
 </script>
 </body>
 </html>
