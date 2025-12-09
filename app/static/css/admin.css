@@ -462,3 +462,28 @@ ado === */
 .campo textarea {
   resize: vertical;
 }
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+}
+
+.badge-verde {
+    background: #22c55e;
+    color: white;
+}
+
+.badge-rojo {
+    background: #ef4444;
+    color: white;
+}
+
+.tipo-sangre {
+    margin-top: 8px;
+    font-size: 1rem;
+    color: var(--primary);
+    font-weight: bold;
+}

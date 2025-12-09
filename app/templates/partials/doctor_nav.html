@@ -27,6 +27,9 @@
           Solicitudes de Donantes
         </a>
         <a href="#">Usuarios</a>
+        <a href="{{ url_for('donaciones_web.listar_donantes') }}"
+           class="{% if active_page=='donantes' %}active{% endif %}">
+          Donantes
       </nav>
     </div>
     <div class="bottom">

@@ -76,7 +76,7 @@ class Donante(db.Model):
     tipo_sangre = db.Column(db.String(5), nullable=False)
     fecha_nacimiento = db.Column(db.Date, nullable=False)
     direccion = db.Column(db.String(150))
-    ultima_donacion = db.Column(db.Date)
+    ultima_donacion = db.Column(db.Date)#cambiar a null
     disponible_para_donar = db.Column(db.Boolean, default=True)
 
     # Relaciones

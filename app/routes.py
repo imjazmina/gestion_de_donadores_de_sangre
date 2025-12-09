@@ -184,8 +184,12 @@ def aprobar_solicitud(id_solicitud):
 def rechazar_solicitud(id_solicitud):
     solicitud = donaciones_controller.rechazar_solicitud(id_solicitud=id_solicitud)
     return redirect(url_for('donaciones_web.mostrar_solicitudes', solicitud=solicitud))
+
+@web_bp.route('/donantes')
+def listar_donantes():
+    donantes = donaciones_controller.obtener_donantes()
+    return render_template('donantes.html', donantes=donantes)
     
-#funcionalidd admin
 # abm usuario
 @web_bp.route('/admin', methods=['POST'])
 @rol_required('admin')
@@ -193,12 +197,6 @@ def crear_usuario():
     data = request.get_json()
     nuevo = donaciones_controller.crear_usuario(data)
     return jsonify(nuevo), 201
-
-@web_bp.route('/admin', methods=['GET'])
-@rol_required('admin')
-def admin():
-    usuarios = donaciones_controller.obtener_usuarios()
-    return render_template('admin.html', usuarios=usuarios)
 
 @web_bp.route('/admin/<int:id_usuario>', methods=['GET'])
 @rol_required('admin')
@@ -269,4 +267,6 @@ def logout():
     session.clear()  # opcional
     session['logout_ok'] = True  # flag temporal
     return redirect(url_for('donaciones_web.index'))
+
+#registro de donantes
 

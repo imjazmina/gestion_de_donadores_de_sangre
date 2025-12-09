@@ -322,7 +322,7 @@ def guardar_evaluacion(id_agendamiento, resultado, comentarios, peso, temperatur
     agendamiento = Agendamiento.query.get(id_agendamiento)
     if not agendamiento:
         raise Exception("El agendamiento no existe")    
-    # ❗ CORRECCIÓN CLAVE: Asignar todos los signos vitales (pueden ser None si el resultado fue 'no_apto')
+
     agendamiento.peso = peso
     agendamiento.temperatura = temperatura
     agendamiento.hemoglobina = hemoglobina
@@ -453,24 +453,29 @@ def generar_pdf_agendamientos():
     return ruta_archivo
 
 
-def actualizar_estado_agendamiento(id_agendamiento, nuevo_estado, observacion, id_doctor):
-    agendamiento = Agendamiento.query.get(id_agendamiento)
+def obtener_donantes():
+    donantes = (
+        db.session.query(Donante)
+        .join(Usuario, Donante.id_usuario == Usuario.id_usuario)
+        .filter(Usuario.rol == 'donante')
+        .all()
+    )
 
-    if not agendamiento:
-        return {"error": "Agendamiento no encontrado"}
+    resultado = []
+    for d in donantes:
+        resultado.append({
+            "id_donante": d.id_donante,
+            "tipo_sangre": d.tipo_sangre,
+            "nombre": d.usuario.nombre,
+            "apellido": d.usuario.apellido,
+            "ultima_donacion": d.ultima_donacion.strftime("%d/%m/%Y") if d.ultima_donacion else "No registra",
+            "disponible_para_donar": d.disponible_para_donar,
+            "direccion": d.direccion,
+            "telefono": d.usuario.telefono
+        })
 
-    agendamiento.estado = nuevo_estado
-    agendamiento.observaciones = observacion
-    agendamiento.id_doctor = id_doctor  
-    db.session.commit()
+    return resultado
 
-    return {
-        "mensaje": f"Agendamiento {nuevo_estado} exitosamente",
-        "id_agendamiento": agendamiento.id_agendamiento,
-        "estado": agendamiento.estado,
-        "observacion": agendamiento.observaciones,
-        "doctor": id_doctor
-    }
 
 # admin
 #abm usuarios
