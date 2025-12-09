@@ -189,7 +189,38 @@ def rechazar_solicitud(id_solicitud):
 def listar_donantes():
     donantes = donaciones_controller.obtener_donantes()
     return render_template('donantes.html', donantes=donantes)
-    
+
+@web_bp.route('/doctores')
+def listar_doctores():
+    doctores = donaciones_controller.obtener_doctores()
+    return render_template('usuarios.html', doctores=doctores) 
+
+@web_bp.route('/doctor/<int:id_doctor>/mostrar')
+def mostrar_doctor(id_doctor):
+    doctor = donaciones_controller.obtener_doctor(id_doctor)
+    return render_template('editUsuario.html', doctor=doctor)
+
+@web_bp.route('/doctor/<int:id_doctor>/guardar', methods=['POST'])
+def editar_doctor(id_doctor):
+    try:
+        nombre = request.form.get('nombre')
+        apellido = request.form.get('apellido')
+        correo = request.form.get('correo')
+        telefono = request.form.get('telefono')
+        especialidad = request.form.get('especialidad')
+        doctor = donaciones_controller.actualizar_doctor(id_doctor, nombre, apellido, correo, telefono, especialidad)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    return redirect(url_for('donaciones_web.listar_doctores'))
+
+@web_bp.route('/doctor/<int:id_doctor>/eliminar', methods=['POST'])
+def eliminar_doctor(id_doctor):
+    donaciones_controller.eliminar_doctor(id_doctor)
+    return redirect(url_for('donaciones_web.listar_doctores'))
+
+
+
+
 # abm usuario
 @web_bp.route('/admin', methods=['POST'])
 @rol_required('admin')

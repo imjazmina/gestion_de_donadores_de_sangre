@@ -1,5 +1,5 @@
 from operator import or_
-from app.models import SolicitudDonante, Agendamiento, Usuario, Donante
+from app.models import SolicitudDonante, Agendamiento, Usuario, Donante, Doctor
 from datetime import date, datetime
 from app import db
 from werkzeug.security import generate_password_hash
@@ -476,6 +476,78 @@ def obtener_donantes():
 
     return resultado
 
+def obtener_doctores():
+    doctores = (
+        db.session.query(Doctor)
+        .join(Usuario, Doctor.id_usuario == Usuario.id_usuario)
+        .filter(Usuario.rol == "doctor")
+        .filter(Usuario.activo == True)
+        .all()
+    )
+
+    resultado = []
+    for d in doctores:
+        resultado.append({
+            "id_doctor": d.id_doctor,
+            "nombre": d.usuario.nombre,
+            "apellido": d.usuario.apellido,
+            "email": d.usuario.email,
+            "telefono": d.usuario.telefono,
+            "especialidad": d.especialidad,
+            "matricula": d.matricula,
+        })
+
+    return resultado
+
+def obtener_doctor(id_doctor):
+    d = (
+        db.session.query(Doctor)
+        .join(Usuario, Doctor.id_usuario == Usuario.id_usuario)
+        .filter(Doctor.id_doctor == id_doctor)
+        .filter(Usuario.rol == "doctor")
+        .filter(Usuario.activo == True)
+        .first()
+    )
+
+    if not d:
+        return None
+
+    return {
+        "id_doctor": d.id_doctor,
+        "nombre": d.usuario.nombre,
+        "apellido": d.usuario.apellido,
+        "correo": d.usuario.email,
+        "telefono": d.usuario.telefono,
+        "especialidad": d.especialidad
+    }
+
+
+def eliminar_doctor(id_doctor):
+    doctor = Doctor.query.get(id_doctor)
+    if not doctor:
+        return False
+
+    usuario = doctor.usuario
+    usuario.activo = False  # borrado lógico
+
+    db.session.commit()
+    return True
+
+
+def actualizar_doctor(id_doctor, nombre, apellido, correo, telefono, especialidad):
+    doctor = Doctor.query.get(id_doctor)
+    if not doctor:
+        return False
+
+    usuario = doctor.usuario
+    usuario.nombre = nombre
+    usuario.apellido = apellido
+    usuario.email = correo
+    usuario.telefono = telefono
+    doctor.especialidad = especialidad
+
+    db.session.commit()
+    return True
 
 # admin
 #abm usuarios

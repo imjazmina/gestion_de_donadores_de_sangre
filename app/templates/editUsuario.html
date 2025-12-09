@@ -1,0 +1,69 @@
+{% extends "partials/doctor_nav.html" %}
+
+{% block titulo %}Editar Doctor{% endblock %}
+{% block titulo_header %}Editar información del Doctor{% endblock %}
+
+{% block contenido %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='../static/css/editUsuario.css') }}">
+
+<div class="perfil-container">
+
+    <!-- === HEADER (FOTO + NOMBRE) === -->
+    <div class="perfil-header">
+        <div class="perfil-foto">
+            <img src="{{ url_for('static', filename='img/icono.jpg') }}">
+        </div>
+    </div>
+
+<<form action="{{ url_for('donaciones_web.editar_doctor', id_doctor=doctor.id_doctor) }}" 
+      method="POST" 
+      class="grid-2">
+
+    <div class="campo-group">
+        <label >Nombre</label>
+        <input type="text" name="nombre" value="{{ doctor.nombre }}" required>
+    </div>
+
+    <div class="campo-group">
+        <label>Apellido</label>
+        <input type="text" name="apellido" value="{{ doctor.apellido }}" required>
+    </div>
+
+    <div class="campo-group">
+        <label>Correo</label>
+        <input type="email" name="correo" value="{{ doctor.correo }}" required>
+    </div>
+
+    <div class="campo-group">
+        <label>Teléfono</label>
+        <input type="text" name="telefono" value="{{ doctor.telefono }}">
+    </div>
+
+    <div class="campo-group">
+        <label>Especialidad</label>
+        <input type="text" name="especialidad" value="{{ doctor.especialidad }}">
+    </div>
+
+    <div class="acciones-centradas">
+        <button type="submit" class="btn-guardar">
+            Guardar cambios
+        </button>
+    </div>
+</form>
+
+
+</div>
+
+<script>
+// Habilitar edición
+document.getElementById("btnEditar").addEventListener("click", function () {
+
+    document.querySelectorAll("#formEditarDoctor input")
+        .forEach(i => i.disabled = false);
+
+    document.getElementById("btnGuardar").style.display = "inline-block";
+    this.style.display = "none";
+</script>
+
+{% endblock %}

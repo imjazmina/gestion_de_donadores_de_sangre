@@ -26,7 +26,9 @@
            class="{% if active_page=='solicitudes' %}active{% endif %}">
           Solicitudes de Donantes
         </a>
-        <a href="#">Usuarios</a>
+        <a href="{{ url_for('donaciones_web.listar_doctores') }}"            
+        class="{% if active_page=='doctores' %}active{% endif %}">
+          Usuarios</a>
         <a href="{{ url_for('donaciones_web.listar_donantes') }}"
            class="{% if active_page=='donantes' %}active{% endif %}">
           Donantes
