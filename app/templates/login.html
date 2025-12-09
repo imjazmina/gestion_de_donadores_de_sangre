@@ -27,9 +27,8 @@
             <input type="password" name="password" id="password" placeholder="**********" required>
 
             <button type="submit" class="btn-login">Iniciar Sesión</button>
-            <button type="button" class="btn-register" onclick="location.href='registro.html'">
-            Crear una cuenta nueva
-            </button>
+            <a href="{{ url_for('donaciones_web.registroDonante') }}" class="btn-register">
+                Crear una cuenta nueva</a>
         </form>
     </div>
 </div>

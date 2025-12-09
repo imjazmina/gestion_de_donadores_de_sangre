@@ -288,4 +288,6 @@ def logout():
     return redirect(url_for('donaciones_web.index'))
 
 #registro de donantes
-
+@web_bp.route('/registro_donante', methods=['GET'])
+def registroDonante():
+    return render_template('registroUser.html')
