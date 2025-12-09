@@ -34,6 +34,32 @@ def obtener_solicitudes_aprobadas():
 
     return resultado
 
+def obtener_solicitudes():
+    solicitudes = (
+        db.session.query(SolicitudDonante)
+        .join(Donante, SolicitudDonante.id_donante == Donante.id_donante)
+        .join(Usuario, Donante.id_usuario == Usuario.id_usuario)
+        .filter(SolicitudDonante.estado == 'pendiente')
+        .all()
+    )
+
+    resultado = []
+    for s in solicitudes:
+        resultado.append({
+            "id_solicitud": s.id_solicitud,
+            "id_donante": s.id_donante,#este id es del donante que solicita la sangre
+            "nombre": s.donante.usuario.nombre,
+            "apellido": s.donante.usuario.apellido,
+            "tipo_sangre": s.tipo_sangre,
+            "cantidad": s.cantidad,
+            "fecha_solicitud": s.fecha_solicitud.strftime("%d/%m/%Y"),
+            "motivo": s.motivo,
+            "estado": s.estado,
+        })
+
+    return resultado
+
+
 def crear_turno(id_donante, fecha, hora, id_solicitante=None    ):
     try:
         # Combinar fecha y hora en un solo datetime
@@ -89,6 +115,34 @@ def crear_solicitud(id_donante, tipo_sangre, cantidad, fecha_solicitud, comentar
     except Exception as e:
         db.session.rollback()
         raise e
+    
+def aprobar_solicitud(id_solicitud):
+    solicitud = SolicitudDonante.query.get(id_solicitud)
+    if not solicitud:
+        raise Exception("Solicitud no encontrada")
+
+    solicitud.estado = 'aprobado'
+    db.session.commit()
+
+    return {
+        "mensaje": "Solicitud aprobada correctamente",
+        "id_solicitud": solicitud.id_solicitud,
+        "estado": solicitud.estado
+    }
+
+def rechazar_solicitud(id_solicitud):
+    solicitud = SolicitudDonante.query.get(id_solicitud)
+    if not solicitud:
+        raise Exception("Solicitud no encontrada")
+
+    solicitud.estado = 'rechazado'
+    db.session.commit()
+
+    return {
+        "mensaje": "Solicitud rechazada correctamente",
+        "id_solicitud": solicitud.id_solicitud,
+        "estado": solicitud.estado
+    }
 
 #doctores
 # Función auxiliar para calcular la edad

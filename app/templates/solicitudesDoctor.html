@@ -1,0 +1,79 @@
+{% extends "partials/doctor_nav.html" %}
+
+{% block titulo %}Solicitudes de donantes{% endblock %}
+{% block titulo_header %}Gestión de Solicitudes{% endblock %}
+
+{% set active_page = "solicitudes" %}
+
+{% block contenido %}
+<link rel="stylesheet" href="{{ url_for('static', filename='../static/css/solicitudesDoctor.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+{% set pendientes = solicitudes | selectattr("estado", "equalto", "pendiente") | list %}
+{% set aprobadas = solicitudes | selectattr("estado", "equalto", "aprobado") | list %}
+{% set rechazadas = solicitudes | selectattr("estado", "equalto", "rechazado") | list %}
+
+{% set ordenadas = pendientes + aprobadas + rechazadas %}
+
+<table class="tabla-solicitudes">
+    <thead>
+        <tr>
+            <th>Paciente</th>
+            <th>Tipo de Sangre</th>
+            <th>Unidades</th>
+            <th>Fecha</th>
+            <th>Motivo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for s in ordenadas %}
+        <tr>
+            <td>{{ s.nombre }} {{ s.apellido }}</td>
+
+            <td>
+                <div class="tipo-sangre">{{ s.tipo_sangre }}</div>
+            </td>
+
+            <td>{{ s.cantidad }}</td>
+
+            <td>{{ s.fecha_solicitud }}</td>
+
+            <td>{{ s.motivo }}</td>
+
+            <td>
+                {% if s.estado == "pendiente" %}
+                    <span class="badge warning">Pendiente</span>
+                {% elif s.estado == "aprobado" %}
+                    <span class="badge success">Aprobado</span>
+                {% else %}
+                    <span class="badge danger">Rechazado</span>
+                {% endif %}
+            </td>
+
+            <td class="acciones">
+                <form action="{{ url_for('donaciones_web.aprobar_solicitud', id_solicitud=s.id_solicitud) }}" 
+                      method="POST"
+                      style="display:inline;">
+                    <button class="btn-circle success">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </form>
+
+                <!-- RECHAZAR -->
+                <form action="{{ url_for('donaciones_web.rechazar_solicitud', id_solicitud=s.id_solicitud) }}"
+                      method="POST"
+                      style="display:inline;">
+                    <button class="btn-circle danger">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

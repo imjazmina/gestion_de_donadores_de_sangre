@@ -22,7 +22,11 @@
           Registros
         </a>
 
-        <a href="#">Solicitud de Donante</a>
+        <a href="{{ url_for('donaciones_web.mostrar_solicitudes') }}"
+           class="{% if active_page=='solicitudes' %}active{% endif %}">
+          Solicitudes de Donantes
+        </a>
+        <a href="#">Usuarios</a>
       </nav>
     </div>
     <div class="bottom">

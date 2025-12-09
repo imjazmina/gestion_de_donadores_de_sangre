@@ -162,25 +162,28 @@ def guardar_evaluacion(id_agendamiento):
     except Exception as e:
         print(e)
         return jsonify({"error": str(e)}), 500
-#cambiar estado de agendamientp de donacion confirmado/cancelar
-@web_bp.route('/agendamientos/<int:id_agendamiento>', methods = ['PUT'])
-@rol_required('doctor')
-def cambiar_estado_agendamiento(id_agendamiento):
+    
+
+#listar solicitudes de donacion pendientes de confirmar/cancelar
+@web_bp.route('/solicitudes', methods = ['GET'])
+def mostrar_solicitudes():
     try:
-        data = request.get_json()
-        nuevo_estado = data.get('estado')
-        observacion = data.get('observacion', None)
-        id_doctor = data.get('id_doctor') 
-
-        if nuevo_estado not in ['confirmado', 'cancelado']:
-            return jsonify({"error": "El estado debe ser 'confirmado' o 'cancelado'"}), 400
-
-        resultado = donaciones_controller.actualizar_estado_agendamiento(
-            id_agendamiento, nuevo_estado, observacion, id_doctor
-        )
-        return jsonify(resultado), 200
+        solicitudes = donaciones_controller.obtener_solicitudes()
+        return render_template('solicitudesDoctor.html', solicitudes=solicitudes)
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": str(e)}), 500
+    
+    
+@web_bp.route('/solicitudes/<int:id_solicitud>/aprobar', methods=['POST'])
+def aprobar_solicitud(id_solicitud):
+    solicitud = donaciones_controller.aprobar_solicitud(id_solicitud)
+    return redirect(url_for('donaciones_web.mostrar_solicitudes', solicitud=solicitud))
+
+
+@web_bp.route('/solicitudes/<int:id_solicitud>/rechazar', methods=['POST'])
+def rechazar_solicitud(id_solicitud):
+    solicitud = donaciones_controller.rechazar_solicitud(id_solicitud=id_solicitud)
+    return redirect(url_for('donaciones_web.mostrar_solicitudes', solicitud=solicitud))
     
 #funcionalidd admin
 # abm usuario
