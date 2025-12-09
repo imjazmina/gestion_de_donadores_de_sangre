@@ -1,97 +1,82 @@
-/* === PALETA === */
 :root {
     --primary: #1e3a8a;
     --primary-light: #3b82f6;
-    --bg: #eff6ff;
-    --text: #333;
-    --white: #fff;
+    --primary-bg: #eff6ff;
+    --accent: #2563eb;
+
+    --text-dark: #1e293b;
+    --text-light: #64748b;
+    --white: #ffffff;
 }
 
-/* === LAYOUT GENERAL === */
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: var(--bg);
+    font-family: "Segoe UI", sans-serif;
+    background: var(--primary-bg);
 }
 
 .container {
+    width: 100%;
+    margin: 0px auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    height: 100vh;
+    background: var(--white);
+    overflow: hidden;
 }
 
-/* === PANEL IZQUIERDO === */
+/* PANEL IZQUIERDO */
 .left-panel {
+    padding: 120px;
     background: var(--primary);
     color: var(--white);
-    padding: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
 
 .left-panel h2 {
-    font-size: 30px;
     margin-bottom: 20px;
 }
 
-.left-panel p {
-    line-height: 1.6;
-    margin-bottom: 20px;
+.left-panel p, .left-panel h4 {
+    margin-bottom: 15px;
 }
 
 .btn-secondary {
     display: inline-block;
-    padding: 12px 25px;
-    background: var(--white);
-    color: var(--primary);
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: bold;
-    width: fit-content;
     margin-top: 20px;
+    padding: 12px 22px;
+    background: #ffffff;
+    color: var(--primary);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
 }
 
-/* === PANEL DERECHO === */
+/* PANEL DERECHO */
 .right-panel {
-    background: var(--white);
-    padding: 60px 80px;
-    overflow-y: auto;
+    max-height: fit-content;
+    padding: 0 50px 20px 40px;
 }
 
 .title {
     color: var(--primary);
-    margin-bottom: 30px;
-    font-size: 28px;
+    text-align: center;
+    margin-bottom: 25px;
 }
 
-/* === FORMULARIO === */
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-label {
-    color: var(--primary);
+/* FORMULARIO */
+.form label {
+    display: block;
     font-weight: 600;
+    color: var(--text-dark);
+    margin-top: 15px;
 }
 
-.correo, .telefono {
-    width: 95%;
-    padding: 12px 15px;
-    border-radius: 8px;
-    border: 1px solid #cbd5e1;
-    background: #f8fafc;
-    font-size: 15px;
-}
-
-input {
+.form input,
+.form select {
     width: 90%;
-    padding: 12px 15px;
-    border-radius: 8px;
+    padding: 10px 12px;
+    border-radius: 6px;
     border: 1px solid #cbd5e1;
-    background: #f8fafc;
+    margin-top: 6px;
     font-size: 15px;
 }
 
@@ -101,40 +86,21 @@ input {
     gap: 18px;
 }
 
-.check {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    font-size: 14px;
-}
-
-/* === BOTONES === */
 .btn-primary {
-    background: var(--primary);
+    width: 100%;
+    margin-top: 25px;
+    padding: 12px;
+    background: var(--accent);
     color: var(--white);
-    padding: 14px;
+    border-radius: 6px;
+    font-size: 17px;
     border: none;
-    border-radius: 8px;
-    font-size: 16px;
     cursor: pointer;
-    margin-top: 10px;
+    font-weight: bold;
 }
 
 .btn-primary:hover {
     background: var(--primary-light);
 }
 
-/* RESPONSIVE */
-@media (max-width: 820px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
 
-    .left-panel {
-        display: none;
-    }
-
-    .right-panel {
-        padding: 40px;
-    }
-}

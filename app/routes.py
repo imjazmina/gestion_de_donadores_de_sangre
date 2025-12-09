@@ -1,6 +1,8 @@
 from flask import Blueprint, jsonify, request, render_template, session, redirect, url_for, send_file
 from app import controllers as donaciones_controller
 from app.auth import login_required, rol_required
+from app.models import Donante, Doctor
+
 
 web_bp = Blueprint('donaciones_web', __name__)
 
@@ -21,7 +23,7 @@ def agendar_donacion():
     if request.method == 'GET':
         return render_template('quierodonar.html')
     data = request.get_json()
-    id_donante = session.get("usuario_id")
+    id_donante = session.get("id_donante")
     fecha = data.get('fecha')
     hora = data.get('hora')
     id_solicitante = data.get('id_solicitante')  # puede ser None
@@ -40,6 +42,7 @@ def agendar_donacion():
         return jsonify(data), 200
 
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 500
 
 # solicitar donantes de sangre
@@ -49,7 +52,7 @@ def crear_solicitud_donantes():
     if request.method == 'GET':
         return render_template('solicitar.html')
     try:
-        id_donante = session.get("usuario_id")
+        id_donante = session.get("id_donante")
         tipo_sangre = request.form.get('tipo_sangre')
         cantidad = request.form.get('cantidad')
         fecha_solicitud = request.form.get('fecha_solicitud')
@@ -241,11 +244,11 @@ def crear_doctor():
 
     return redirect(url_for('donaciones_web.listar_doctores'))
 
-
 @web_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
         return render_template('login.html')
+
     try:
         data = request.get_json()
         email = data.get('email')
@@ -258,14 +261,37 @@ def login():
 
         if not usuario:
             return jsonify({"error": "Credenciales inválidas"}), 401
-        
-        # Guardamos sesión
+
+        # ------------------------------
+        # GUARDAR SESIÓN BÁSICA
+        # ------------------------------
         session['usuario_id'] = usuario.id_usuario
         session['rol'] = usuario.rol
         session['nombre'] = usuario.nombre
         session.permanent = False
 
+        # ------------------------------
+        # GUARDAR ID_DONANTE / ID_DOCTOR
+        # ------------------------------
+        if usuario.rol == "donante":
+            donante = Donante.query.filter_by(id_usuario=usuario.id_usuario).first()
+            if donante:
+                session['id_donante'] = donante.id_donante
+                print("Donante logueado:", donante.id_donante)
+            else:
+                print("⚠ ERROR: Usuario donante no tiene registro asociado")
 
+        elif usuario.rol == "doctor":
+            doctor = Doctor.query.filter_by(id_usuario=usuario.id_usuario).first()
+            if doctor:
+                session['id_doctor'] = doctor.id_doctor
+                print("Doctor logueado:", doctor.id_doctor)
+
+        print("Usuario logueado:", usuario.id_usuario, "Rol:", usuario.rol)
+
+        # ------------------------------
+        # REDIRECCIÓN
+        # ------------------------------
         if usuario.rol == 'admin':
             redirect_url = "/admin"
         elif usuario.rol == 'doctor':
@@ -291,3 +317,32 @@ def logout():
 @web_bp.route('/registro_donante', methods=['GET'])
 def registroDonante():
     return render_template('registroUser.html')
+
+@web_bp.route('/registro_donante/crear', methods=['POST'])
+def crear_donante():
+    try:
+        nombre = request.form.get('nombre')
+        apellido = request.form.get('apellido')
+        email = request.form.get('email')
+        telefono = request.form.get('telefono')
+        password = request.form.get('password')
+        password2 = request.form.get('password2')
+        fecha_nacimiento = request.form.get('fecha_nacimiento')
+        tipo_sangre = request.form.get('tipo_sangre')
+        direccion = request.form.get('direccion')
+
+        # Validaciones básicas
+        if password != password2:
+            return "Las contraseñas no coinciden", 400
+
+        creado = donaciones_controller.crear_donante(
+            nombre, apellido, email, telefono, password,
+            fecha_nacimiento, tipo_sangre, direccion
+        )
+
+        if not creado:
+            return "Error al registrar usuario. Correo ya existe o datos inválidos.", 400
+        print(creado)
+        return redirect(url_for('donaciones_web.login'))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

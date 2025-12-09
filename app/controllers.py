@@ -590,3 +590,36 @@ def login_usuario(email, contrasena):
         return None
 
     return usuario
+def crear_donante(nombre, apellido, email, telefono, contrasena,
+                  fecha_nacimiento, tipo_sangre, direccion):
+
+    # Si el email ya existe, no crear
+    if Usuario.query.filter_by(email=email).first():
+        return False
+
+    # Crear usuario base
+    usuario = Usuario(
+        nombre=nombre,
+        apellido=apellido,
+        email=email,
+        telefono=telefono,
+        contrasena=contrasena,
+        rol="donante",
+        activo=True
+    )
+    db.session.add(usuario)
+    db.session.commit()
+
+    # Crear registro Donante asociado
+    donante = Donante(
+        id_usuario=usuario.id_usuario,
+        fecha_nacimiento=fecha_nacimiento,
+        tipo_sangre=tipo_sangre,
+        direccion=direccion,
+        disponible_para_donar=True
+    )
+
+    db.session.add(donante)
+    db.session.commit()
+
+    return donante
