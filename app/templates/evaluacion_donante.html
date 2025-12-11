@@ -1,0 +1,139 @@
+    {% extends "partials/doctor_nav.html" %}
+
+    {% block titulo %}Donador{% endblock %}
+    {% block titulo_header %}Perfil del Donador{% endblock %}
+
+    {% set active_page = "citas" %}
+
+    {% block contenido %}
+    <header>
+        <link rel="stylesheet" href="../static/css/evaluacion.css">
+    </header>
+
+    <!-- === NUEVO HEADER CON FOTO IZQ + INFO DER === -->
+    <div class="perfil-header">
+        
+        <!-- FOTO IZQUIERDA -->
+        <div class="perfil-col-der">
+            <img src="{{ url_for('static', filename='img/icono.jpg') }}" class="perfil-foto" alt="Foto">
+        </div>
+
+        <!-- INFO DERECHA -->
+        <div class="perfil-col-izq">
+            <h2>{{ agendamiento.nombre }} {{ agendamiento.apellido }}</h2>
+
+            <span class="estado {{ 'disponible' if agendamiento.disponible_para_donar else 'no-disponible' }}">
+                {{ 'Disponible' if agendamiento.disponible_para_donar else 'No disponible' }}
+            </span>
+
+            <p class="tipo-sangre">
+                <span>🩸</span>
+                Tipo de sangre: <strong>{{ agendamiento.tipo_sangre }}</strong>
+            </p>
+        </div>
+
+    </div>
+    <!-- === GRID DE DATOS DEL DONANTE EN 2 COLUMNAS === -->
+    <div class="datos-donante-grid">
+
+        <div class="dato-item">
+            <label>Edad</label>
+            <p>{{ agendamiento.edad }} años</p>
+        </div>
+
+        <div class="dato-item">
+            <label>Teléfono</label>
+            <p>{{ agendamiento.telefono }}</p>
+        </div>
+
+        <div class="dato-item">
+            <label>Dirección</label>
+            <p>{{ agendamiento.direccion }}</p>
+        </div>
+
+        <div class="dato-item">
+            <label>Última donación</label>
+            <p>{{ agendamiento.ultima_donacion if agendamiento.ultima_donacion else 'No registra' }}</p>
+        </div>
+
+    </div>
+
+<form id="form-evaluacion" action="{{ url_for('donaciones_web.guardar_evaluacion', id_agendamiento=agendamiento.id_agendamiento) }}" method="POST" class="form-evaluacion">
+
+    <h3 class="titulo-form">Verificación de Aptitud</h3>
+
+    <div class="aptitud-grid">
+
+        <div class="campo">
+            <label><span class="icon"></span> Peso (kg)</label>
+            <input type="number" name="peso" step="0.1" placeholder="Ej: 65.5">
+        </div>
+
+        <div class="campo">
+            <label><span class="icon"></span> Presión arterial (mmHg)</label>
+            <input type="text" name="presion" placeholder="Ej: 120/80">
+        </div>
+
+        <div class="campo">
+            <label><span class="icon"></span> Temperatura (°C)</label>
+            <input type="number" name="temperatura" step="0.1" placeholder="Ej: 36.5">
+        </div>
+
+        <div class="campo">
+            <label><span class="icon"></span> Hemoglobina (g/dL)</label>
+            <input type="number" name="hemoglobina" step="0.1" placeholder="Ej: 14.5">
+        </div>
+
+        <div class="campo" id="comentarios-box">
+            <label>Comentarios</label>
+            <textarea name="comentarios" rows="3" placeholder="" type="text"></textarea>
+        </div>
+
+        <div class="campo">
+            <label>Resultado de la evaluación</label>
+            <select name="resultado" required>
+                <option value="">Seleccione...</option>
+                <option value="apto">Aprobado</option>
+                <option value="no_apto">Rechazado</option>
+            </select>
+        </div>
+    </div>
+
+    <button type="submit" class="btn-guardar">Guardar evaluación</button>
+    </form> 
+    <!--falta un pequeno logout-->
+    
+    <script>
+document.getElementById("form-evaluacion").addEventListener("submit", async function(e) {
+    e.preventDefault(); 
+
+    const form = e.target;
+    const url = form.action;
+
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Formulario enviado con éxito");
+            
+            // Recargar o redirigir si querés
+            location.reload();
+
+        } else {
+            alert("Error: " + (data.error || "Ocurrió un error inesperado"));
+        }
+
+    } catch (err) {
+        alert("Error de conexión: No se pudo enviar la evaluación.");
+    }
+});
+</script>
+
+    {% endblock %}

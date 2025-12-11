@@ -1,0 +1,39 @@
+.badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-verde {
+    background: #22c55e;
+    color: white;
+}
+
+.badge-rojo {
+    background: #ef4444;
+    color: white;
+}
+
+.acciones {
+    display: flex;
+    gap: 6px;
+}
+
+.inline-form {
+    display: inline-block;
+}
+
+.btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-ver { background: #2563eb; }
+.btn-editar { background: #16a34a; }
+.btn-eliminar { background: #dc2626; }

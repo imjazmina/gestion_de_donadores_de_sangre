@@ -1,0 +1,57 @@
+{% extends "partials/doctor_nav.html" %}
+
+{% block titulo %}Donantes{% endblock %}
+{% block titulo_header %}Listado de Donantes{% endblock %}
+
+{% block contenido %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='../static/css/usuarios.css') }}">
+    <table class="tabla-agendamientos">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Tipo de Sangre</th>
+                <th>Dirección</th>
+                <th>Telefono</th>
+                <th>Última Donación</th>
+                <th>Disponible</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for donante in donantes %}
+
+            <tr>
+                <td>{{ donante.nombre }} {{ donante.apellido }}</td>
+
+                <td><div class="tipo-sangre">{{ donante.tipo_sangre }}</div></td>
+
+                <td>{{ donante.direccion or "—" }}</td>
+                <td>{{ donante.telefono or "—" }}</td>
+                <td>
+                    {% if donante.ultima_donacion %}
+                        {{ donante.ultima_donacion }}
+                    {% else %}
+                        Nunca
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if donante.disponible_para_donar %}
+                        <button class="badge badge-verde">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    {% else %}
+                        <button class="badge badge-rojo">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    {% endif %}
+                </td>
+            </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

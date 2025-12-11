@@ -1,0 +1,135 @@
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+body, html {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.container-login {
+  flex: 1;
+  display: flex;
+  min-height: calc(100vh - 120px); 
+}
+
+.left-panel {
+  flex: 1;
+  background: rgb(18, 12, 97);
+  color: #fff;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.left-panel img {
+  width: 200px;
+  margin-bottom: 40px;
+}
+
+.welcome-text {
+  text-align: center;
+}
+
+.welcome-title {
+  font-size: 2.2rem;
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+
+.main-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.25);
+}
+
+.welcome-subtext {
+  font-size: 1.2rem;
+  color: #f1f1f1;
+  line-height: 1.6;
+}
+
+.right-panel {
+  flex: 1;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 40px;
+}
+
+.loginForm {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  gap: 20px;
+}
+
+.loginForm h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #2c2d2e;
+  text-align: center;
+}
+
+.loginForm label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #333;
+}
+
+.loginForm input[type="email"],
+.loginForm input[type="password"] {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #2D8CF0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+.btn-login, .btn-register {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-login {
+  background-color: rgb(18, 12, 97);
+  color: #fff;
+}
+
+.btn-login:hover {
+  background-color: #1e6fcc;
+}
+
+
+.btn-register {
+    display: inline-block;
+    padding: 10px 100px;
+    border: 2px solid #2563eb;
+    color: #2563eb;
+    border-radius: 10px;
+    font-size: 18px;
+    text-decoration: none;
+    transition: 0.2s ease-in-out;
+    align-items: center;
+}
+
+.btn-register:hover {
+    background: #2563eb;
+    color: white;
+}

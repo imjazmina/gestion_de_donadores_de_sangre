@@ -2,11 +2,238 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Index</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Banco de Sangre</title>
+  <link rel="stylesheet" href="../static/css/style.css">
 </head>
 <body>
-  <h1>Proyecto Sistema de de Donadores de Sangre</h1>
+   {% include 'partials/navbar.html' %}
+  <section class="hero">
+  <div class="hero-left">
+    <p class="mini">Tu donación puede salvar vidas</p>
+    <h1>Un pequeño gesto, una gran diferencia.</h1>
+
+  <a href="#agendar-donacion-hero" class="btn-primary">Quiero Donar</a>
+  </div>
+
+  <div class="hero-right">
+    <img src="/static/img/donacion5.jpg" alt="donación">
+  </div>
+</section>
+<!-- Beneficios -->
+<section class="beneficios">
+  <div class="beneficio">
+    <img src="../static/img/gotita1.png" alt="Solidaridad">
+    <h3>Solidaridad</h3>
+    <p>Tu pedido conecta con personas dispuestas a ayudar sin esperar nada a cambio.</p>
+  </div>
+  <div class="beneficio">
+    <img src="../static/img/logitoheroe.png" alt="Rapidez">
+    <h3>Rapidez</h3>
+    <p>Recibe respuesta en poco tiempo gracias a nuestra red activa de donantes.</p>
+  </div>
+  <div class="beneficio">
+    <img src="../static/img/gotita4.png" alt="Confianza">
+    <h3>Confianza</h3>
+    <p>Todas las solicitudes son verificadas y gestionadas con responsabilidad.</p>
+  </div>
+</section>
+
+<section class="agendar-donacion-hero" id="agendar-donacion-hero">
+  <!-- Columna izquierda con imagen -->
+  <div class="agendar-hero-left">
+    <img src="/static/img/donacion1.jpg" alt="Donación de sangre">
+  </div>
+
+  <!-- Columna derecha con texto + form -->
+  <div class="agendar-hero-right">
+    <h2 class="titulo-agendar">Tu donacion puede marcar la diferencia entre la vida y la esperanza 💙</h2>
+    <p class="subtitulo-agendar">Consulta los turnos disponibles para donar. </p>
+
+    <form id="agendarForm" class="formulario-agendar" method="POST" action="{{ url_for('donaciones_web.agendar_donacion') }}"  >
+      <div class="campo">
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha" required>
+      </div>
+
+      <div class="campo">
+        <label for="hora">Hora</label>
+        <input type="time" id="hora" name="hora" required>
+      </div>
+
+      <button type="submit" class="boton-agendar">Agendar</button>
+    </form>
+  </div>
+</section>
+
+<!-- Listado de Solicitudes -->
+<section style="padding: 50px 0; background: #dfeeff;">
+<div class="titulo-solicitudes">
+  <h1>Ellos necesitan de tu ayuda</h1>
+  <p>Estas son algunas de las historias de personas que requieren sangre.<br>
+  Haz clic en alguna de ellas para conocer sus historias.</p>
+</div>
+  <div class="container">
+    {% for solicitud in solicitudes %}
+      <div class="card">
+      <div class="id_solicitante" hidden>
+        {{ solicitud.id_donante }}
+      </div>
+        <img src="{{ url_for('static', filename='img/icono.jpg') }}" 
+          alt="Foto del solicitante"
+          class="foto-solicitante">
+        <div class="nombre"> {{ solicitud.nombre }} {{ solicitud.apellido }}</div>
+        <div class="tipo-sangre">
+          <span>Tipo de sangre</span>
+          <h3>{{ solicitud.tipo_sangre }}</h3>
+        </div>
+        <div class="info-extra">
+          "{{ solicitud.comentarios }}"
+        </div>
+        <a href="{{ url_for('donaciones_web.agendar_donacion') }}" 
+          class="btn-donar">
+          Ayudar ahora
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="faq">
+  <h2>¿Tienes dudas sobre donar sangre?</h2>
+  <p>Encuentra aquí respuestas claras y confiables sobre el proceso de donación</p>
+
+  <div class="accordion">
+    <div class="item">  
+      <button class="accordion-btn">¿Cada cuánto se puede donar sangre?</button>
+      <div class="accordion-content">
+        <p>Los hombres pueden donar cada <strong>3 meses</strong> y las mujeres cada <strong>4 meses</strong>, siempre que cumplan con las condiciones de salud adecuadas.</p>
+      </div>
+    </div>
+
+    <div class="item">
+      <button class="accordion-btn">¿Qué requisitos debo cumplir para donar?</button>
+      <div class="accordion-content">
+        <p>Debes tener entre <strong>18 y 65 años</strong>, pesar más de <strong>50 kg</strong>, y gozar de buena salud. Además, es importante haber descansado bien y no haber ingerido alcohol en las últimas 24 horas.</p>
+      </div>
+    </div>
+
+    <div class="item">
+      <button class="accordion-btn">¿Qué beneficios tiene donar sangre?</button>
+      <div class="accordion-content">
+        <p>Donar sangre ayuda a salvar vidas, estimula la regeneración de tus células sanguíneas y refuerza el sentido de solidaridad. ¡Un pequeño gesto con gran impacto!</p>
+      </div>
+    </div>
+
+    <div class="item">
+      <button class="accordion-btn">¿Puedo donar si estoy tomando medicamentos?</button>
+      <div class="accordion-content">
+        <p>Depende del medicamento. Algunos tratamientos leves no impiden donar, pero siempre se recomienda informar al personal médico antes de hacerlo.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include 'partials/footer.html' %}
+
+{% if session.get('logout_ok') %}
+<script>
+    alert("Sesión cerrada correctamente.");
+</script>
+{% set _ = session.pop('logout_ok') %}
+{% endif %}
+
+<script>
+
+document.querySelector('a[href="#agendar-donacion-hero"]').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelector('#agendar-donacion-hero').scrollIntoView({
+        behavior: 'smooth'
+    });
+});
+
+document.getElementById("agendarForm").addEventListener("submit", async function(e) {
+    e.preventDefault(); // Evita recargar la página
+
+    const fecha = document.getElementById("fecha").value;
+    const hora = document.getElementById("hora").value;
+
+    // Validación rápida en frontend
+    if (!fecha || !hora) {
+        alert("Por favor completa todos los campos.");
+        return;
+    }
+
+    try {
+        const response = await fetch("{{ url_for('donaciones_web.agendar_donacion') }}", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ fecha, hora })
+        });
+
+        // Si el backend redirige → fetch NO cambia de página
+        if (response.redirected) {
+            window.location.href = response.url;
+            return;
+        }
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("¡Tu turno se agendó correctamente! 💙");
+        } else {
+            alert("Error: " + data.error);
+        }
+    } catch (error) {
+        alert("Hubo un error inesperado. Intenta nuevamente.");
+        console.error(error);
+    }
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const botones = document.querySelectorAll(".btn-donar");
+
+  botones.forEach(boton => {
+    boton.addEventListener("click", (e) => {
+      const card = e.target.closest(".card");
+      const idSolicitante = card.querySelector(".id_solicitante").innerText.trim();
+
+      localStorage.setItem("id_solicitante", idSolicitante);
+      console.log("ID del solicitante guardado:", idSolicitante);
+    });
+  });
+}); 
+document.addEventListener("DOMContentLoaded", () => {
+
+  const buttons = document.querySelectorAll(".accordion-btn");
+
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+
+      const content = btn.nextElementSibling;
+
+      // Cerrar todos excepto el actual
+      document.querySelectorAll(".accordion-btn").forEach(otherBtn => {
+        if (otherBtn !== btn) {
+          otherBtn.classList.remove("active");
+          otherBtn.nextElementSibling.style.display = "none";
+        }
+      });
+
+      // Alternar el actual
+      if (btn.classList.contains("active")) {
+        btn.classList.remove("active");
+        content.style.display = "none";
+      } else {
+        btn.classList.add("active");
+        content.style.display = "block";
+      }
+
+    });
+  });
+
+});
+
+
+</script>
 </body>
 </html>
